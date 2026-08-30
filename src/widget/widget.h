@@ -36,4 +36,7 @@ void putchar_in_widget(struct widget *wid, char c, int x, int y);
 void putstring_in_widget(struct widget *wid, char *str, int x, int y);
 void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...);
 
+void create_widget_debug(struct widget *wid);
+int destroy_widget_debug(struct widget *wid);
+
 #endif

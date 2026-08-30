@@ -52,14 +52,15 @@ static int vwrite_debug(const char *status, const char *str, va_list args) {
   }
 
   int prefix_len = strlen(prefix);
-  int total_len = prefix_len + str_len;
+  int total_len = prefix_len + str_len + 1;
 
-  buffer = (char *)malloc(total_len + 1);
+  buffer = (char *)malloc(total_len + 2);
   if (!buffer)
     return -1;
 
   strcpy(buffer, prefix);
   vsnprintf(buffer + prefix_len, str_len + 1, str, args);
+  buffer[total_len - 1] = '\n';
 
   numWrite = write(debug_fd, buffer, total_len);
 

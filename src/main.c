@@ -50,7 +50,11 @@ int main(int argc, char *argv[]) {
 
   init_debug();
 
+  write_debug_info("Debug init");
+
   init_terminal();
+
+  write_debug_info("Terminal init %dx%d", term.width, term.height);
 
   struct widget *display_wid =
       init_display(0, 0, term.height, term.width, TERMINAL_COLOR_BLUE_FG,
@@ -58,7 +62,8 @@ int main(int argc, char *argv[]) {
 
   init_signal_handler();
 
-  write_debug_info("proverka\n");
+  write_debug_info("Signal handler init");
+  write_debug_info("Start main loop");
 
   while (1) {
     render_display();

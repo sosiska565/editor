@@ -4,9 +4,6 @@
 #include "../bottombar/bottombar.h"
 #include "../clock/clock.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 static struct widget display_wid;
 static struct widget *clock_wid;
 static struct widget *bottombar_wid;
@@ -20,7 +17,7 @@ struct widget *init_display(int x, int y, int height, int width, int fg_color,
                                 .fg_color = fg_color,
                                 .bg_color = bg_color};
 
-  create_widget(&display_wid);
+  create_widget_debug(&display_wid);
 
   bottombar_wid =
       init_bottombar(0, term.height - 1, 1, term.width, TERMINAL_COLOR_BLACK_FG,
@@ -41,8 +38,10 @@ void render_display() {
   render_clock();
 }
 void destroy_display() {
-  if (destroy_widget(&display_wid) < 0) {
-    fprintf(stderr, "ERROR: failed destroy widget");
-    exit(EXIT_FAILURE);
-  }
+  remove_children(&display_wid, bottombar_wid);
+  remove_children(bottombar_wid, clock_wid);
+
+  destroy_widget_debug(&display_wid);
+  destroy_widget_debug(bottombar_wid);
+  destroy_widget_debug(clock_wid);
 }

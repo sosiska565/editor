@@ -224,3 +224,21 @@ void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...) {
 
   free(buffer);
 }
+
+void create_widget_debug(struct widget *wid) {
+  create_widget(wid);
+  write_debug_info("widget %d created", wid->id);
+}
+
+int destroy_widget_debug(struct widget *wid) {
+  int id = destroy_widget(wid);
+
+  if (id < 0) {
+    write_debug_err("widget destroy err. Id: %d", id);
+    exit(EXIT_FAILURE);
+  }
+
+  write_debug_info("widget %d destroy", id);
+
+  return id;
+}
