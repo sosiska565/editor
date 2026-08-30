@@ -221,6 +221,42 @@ CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o: /home/egor
   /usr/include/unistd.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stddef.h
 
+CMakeFiles/editor.dir/src/info.c.o: /home/egor/editor/src/info.c \
+  /home/egor/editor/src/info.h \
+  /usr/include/bits/confname.h \
+  /usr/include/bits/environments.h \
+  /usr/include/bits/floatn-common.h \
+  /usr/include/bits/floatn.h \
+  /usr/include/bits/getopt_core.h \
+  /usr/include/bits/getopt_posix.h \
+  /usr/include/bits/libc-header-start.h \
+  /usr/include/bits/long-double.h \
+  /usr/include/bits/posix_opt.h \
+  /usr/include/bits/stdio_lim.h \
+  /usr/include/bits/time64.h \
+  /usr/include/bits/timesize.h \
+  /usr/include/bits/types.h \
+  /usr/include/bits/types/FILE.h \
+  /usr/include/bits/types/__FILE.h \
+  /usr/include/bits/types/__fpos64_t.h \
+  /usr/include/bits/types/__fpos_t.h \
+  /usr/include/bits/types/__mbstate_t.h \
+  /usr/include/bits/types/cookie_io_functions_t.h \
+  /usr/include/bits/types/struct_FILE.h \
+  /usr/include/bits/typesizes.h \
+  /usr/include/bits/unistd_ext.h \
+  /usr/include/bits/wordsize.h \
+  /usr/include/features-time64.h \
+  /usr/include/features.h \
+  /usr/include/gnu/stubs-64.h \
+  /usr/include/gnu/stubs.h \
+  /usr/include/stdc-predef.h \
+  /usr/include/stdio.h \
+  /usr/include/sys/cdefs.h \
+  /usr/include/unistd.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdarg.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stddef.h
+
 CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
   /home/egor/editor/src/debug/debug.h \
   /home/egor/editor/src/handlers/signalHandlers/signalHandlers.h \
@@ -501,8 +537,63 @@ CMakeFiles/editor.dir/src/widgets/display/display.c.o: /home/egor/editor/src/wid
   /home/egor/editor/src/widgets/bottombar/bottombar.h \
   /home/egor/editor/src/widget/widget.h \
   /home/egor/editor/src/widgets/clock/clock.h \
+  /home/egor/editor/src/widget/widget.h \
+  /home/egor/editor/src/widgets/topbar/topbar.h \
   /home/egor/editor/src/widgets/display/display.h \
   /usr/include/stdc-predef.h
+
+CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o: /home/egor/editor/src/widgets/topbar/topbar.c \
+  /home/egor/editor/src/widget/widget.h \
+  /home/egor/editor/src/widgets/topbar/topbar.h \
+  /usr/include/alloca.h \
+  /usr/include/bits/atomic_wide_counter.h \
+  /usr/include/bits/byteswap.h \
+  /usr/include/bits/endian.h \
+  /usr/include/bits/endianness.h \
+  /usr/include/bits/floatn-common.h \
+  /usr/include/bits/floatn.h \
+  /usr/include/bits/libc-header-start.h \
+  /usr/include/bits/long-double.h \
+  /usr/include/bits/pthreadtypes-arch.h \
+  /usr/include/bits/pthreadtypes.h \
+  /usr/include/bits/select.h \
+  /usr/include/bits/stdint-intn.h \
+  /usr/include/bits/stdlib-float.h \
+  /usr/include/bits/struct_mutex.h \
+  /usr/include/bits/struct_rwlock.h \
+  /usr/include/bits/thread-shared-types.h \
+  /usr/include/bits/time64.h \
+  /usr/include/bits/timesize.h \
+  /usr/include/bits/types.h \
+  /usr/include/bits/types/__locale_t.h \
+  /usr/include/bits/types/__sigset_t.h \
+  /usr/include/bits/types/clock_t.h \
+  /usr/include/bits/types/clockid_t.h \
+  /usr/include/bits/types/locale_t.h \
+  /usr/include/bits/types/once_flag.h \
+  /usr/include/bits/types/sigset_t.h \
+  /usr/include/bits/types/struct_timespec.h \
+  /usr/include/bits/types/struct_timeval.h \
+  /usr/include/bits/types/time_t.h \
+  /usr/include/bits/types/timer_t.h \
+  /usr/include/bits/typesizes.h \
+  /usr/include/bits/uintn-identity.h \
+  /usr/include/bits/waitflags.h \
+  /usr/include/bits/waitstatus.h \
+  /usr/include/bits/wordsize.h \
+  /usr/include/endian.h \
+  /usr/include/features-time64.h \
+  /usr/include/features.h \
+  /usr/include/gnu/stubs-64.h \
+  /usr/include/gnu/stubs.h \
+  /usr/include/stdc-predef.h \
+  /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/include/sys/cdefs.h \
+  /usr/include/sys/select.h \
+  /usr/include/sys/types.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stddef.h
 
 editor: /usr/lib/Scrt1.o \
   /usr/lib/crti.o \
@@ -522,13 +613,17 @@ editor: /usr/lib/Scrt1.o \
   CMakeFiles/editor.dir/src/debug/debug.c.o \
   CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o \
   CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o \
+  CMakeFiles/editor.dir/src/info.c.o \
   CMakeFiles/editor.dir/src/main.c.o \
   CMakeFiles/editor.dir/src/terminal/terminal.c.o \
   CMakeFiles/editor.dir/src/widget/widget.c.o \
   CMakeFiles/editor.dir/src/widgets/bottombar/bottombar.c.o \
   CMakeFiles/editor.dir/src/widgets/clock/clock.c.o \
-  CMakeFiles/editor.dir/src/widgets/display/display.c.o
+  CMakeFiles/editor.dir/src/widgets/display/display.c.o \
+  CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o
 
+
+CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o:
 
 CMakeFiles/editor.dir/src/widgets/clock/clock.c.o:
 
@@ -557,6 +652,10 @@ CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o:
 /usr/lib/gcc/x86_64-pc-linux-gnu/16/libgcc_s_asneeded.so:
 
 /usr/lib/libc.so:
+
+/home/egor/editor/src/widgets/topbar/topbar.c:
+
+/home/egor/editor/src/widgets/topbar/topbar.h:
 
 /home/egor/editor/src/widgets/display/display.c:
 
@@ -592,11 +691,15 @@ CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o:
 
 /usr/include/linux/sockios.h:
 
+/usr/include/linux/ioctl.h:
+
 /usr/include/bits/types/struct_timespec.h:
 
 /usr/include/bits/types/locale_t.h:
 
 /usr/include/bits/types/cookie_io_functions_t.h:
+
+CMakeFiles/editor.dir/src/info.c.o:
 
 /usr/include/endian.h:
 
@@ -774,6 +877,8 @@ CMakeFiles/editor.dir/src/widget/widget.c.o:
 
 /usr/include/bits/signum-generic.h:
 
+/home/egor/editor/src/info.c:
+
 /usr/include/bits/pthreadtypes-arch.h:
 
 /usr/include/fcntl.h:
@@ -841,8 +946,6 @@ CMakeFiles/editor.dir/src/widget/widget.c.o:
 /usr/include/bits/types/struct_sigstack.h:
 
 /usr/include/bits/types/sigevent_t.h:
-
-/usr/include/linux/ioctl.h:
 
 /usr/include/bits/types/sigval_t.h:
 

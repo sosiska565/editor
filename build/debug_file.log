@@ -1,8 +1,8 @@
-
-[ 08/30/2026 - 19:50:37 INFO ] Debug init
-[ 08/30/2026 - 19:50:37 INFO ] Terminal init 138x42
-[ 08/30/2026 - 19:50:37 INFO ] widget 0 created
-[ 08/30/2026 - 19:50:37 INFO ] widget 1 created
-[ 08/30/2026 - 19:50:37 INFO ] widget 2 created
-[ 08/30/2026 - 19:50:37 INFO ] Signal handler init
-[ 08/30/2026 - 19:50:37 INFO ] Start main loop
+[ 08/30/2026 - 22:41:40 INFO ] Debug init
+[ 08/30/2026 - 22:41:40 INFO ] Terminal init 179x44
+[ 08/30/2026 - 22:41:40 INFO ] widget 0 created
+[ 08/30/2026 - 22:41:40 INFO ] widget 1 created
+[ 08/30/2026 - 22:41:40 INFO ] widget 2 created
+[ 08/30/2026 - 22:41:40 INFO ] widget 3 created
+[ 08/30/2026 - 22:41:40 INFO ] Signal handler init
+[ 08/30/2026 - 22:41:40 INFO ] Start main loop

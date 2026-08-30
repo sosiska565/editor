@@ -18,6 +18,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/egor/editor/src/widgets/bottombar/bottombar.c" "CMakeFiles/editor.dir/src/widgets/bottombar/bottombar.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/bottombar/bottombar.c.o.d"
   "/home/egor/editor/src/widgets/clock/clock.c" "CMakeFiles/editor.dir/src/widgets/clock/clock.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/clock/clock.c.o.d"
   "/home/egor/editor/src/widgets/display/display.c" "CMakeFiles/editor.dir/src/widgets/display/display.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/display/display.c.o.d"
+  "/home/egor/editor/src/widgets/topbar/topbar.c" "CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o.d"
   "" "editor" "gcc" "CMakeFiles/editor.dir/link.d"
   )
 

@@ -30,7 +30,8 @@ void render_clock() {
 
   strftime(time_buffer, sizeof(time_buffer), "%H:%M:%S", local_time);
 
-  putstring_in_widget(&clock_wid, time_buffer, 0, 0);
+  putstring_in_widgetf_aligment(&clock_wid, ALIGN_X_CTR | ALIGN_Y_CTR, "%s",
+                                time_buffer);
 
   render(&clock_wid);
 }

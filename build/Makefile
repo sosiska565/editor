@@ -376,6 +376,30 @@ src/widgets/display/display.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/display/display.c.s
 .PHONY : src/widgets/display/display.c.s
 
+src/widgets/topbar/topbar.o: src/widgets/topbar/topbar.c.o
+.PHONY : src/widgets/topbar/topbar.o
+
+# target to build an object file
+src/widgets/topbar/topbar.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o
+.PHONY : src/widgets/topbar/topbar.c.o
+
+src/widgets/topbar/topbar.i: src/widgets/topbar/topbar.c.i
+.PHONY : src/widgets/topbar/topbar.i
+
+# target to preprocess a source file
+src/widgets/topbar/topbar.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.i
+.PHONY : src/widgets/topbar/topbar.c.i
+
+src/widgets/topbar/topbar.s: src/widgets/topbar/topbar.c.s
+.PHONY : src/widgets/topbar/topbar.s
+
+# target to generate assembly for a file
+src/widgets/topbar/topbar.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.s
+.PHONY : src/widgets/topbar/topbar.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -416,6 +440,9 @@ help:
 	@echo "... src/widgets/display/display.o"
 	@echo "... src/widgets/display/display.i"
 	@echo "... src/widgets/display/display.s"
+	@echo "... src/widgets/topbar/topbar.o"
+	@echo "... src/widgets/topbar/topbar.i"
+	@echo "... src/widgets/topbar/topbar.s"
 .PHONY : help
 
 

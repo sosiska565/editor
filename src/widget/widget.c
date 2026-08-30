@@ -86,6 +86,8 @@ void create_widget(struct widget *wid) {
   wid->bottom = wid->y + wid->height;
   wid->left = wid->x;
   wid->right = wid->x + wid->width;
+  wid->center_x = wid->width / 2;
+  wid->center_y = wid->height / 2;
 
   add_widget(wid);
 }
@@ -225,6 +227,30 @@ void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...) {
   free(buffer);
 }
 
+void vputstring_in_widgetf(struct widget *wid, int x, int y, char *format,
+                           va_list args) {
+  va_list args_copy;
+  char *buffer;
+
+  va_copy(args_copy, args);
+  int str_len = vsnprintf(NULL, 0, format, args_copy);
+  va_end(args_copy);
+
+  if (str_len < 0) {
+    write_debug_err("widget.c: str_len < 0");
+  }
+
+  buffer = (char *)malloc(str_len + 1);
+  if (!buffer)
+    exit(EXIT_FAILURE);
+
+  vsnprintf(buffer, str_len + 1, format, args);
+
+  putstring_in_widget(wid, buffer, x, y);
+
+  free(buffer);
+}
+
 void create_widget_debug(struct widget *wid) {
   create_widget(wid);
   write_debug_info("widget %d created", wid->id);
@@ -241,4 +267,59 @@ int destroy_widget_debug(struct widget *wid) {
   write_debug_info("widget %d destroy", id);
 
   return id;
+}
+
+void get_aligment_coordinates(int *x, int *y, int width, int height,
+                              int content_width, int content_height,
+                              int flags) {
+  if (flags & ALIGN_X_CTR) {
+    (*x) = (width - content_width) / 2;
+  } else if (flags & ALIGN_RIGHT) {
+    (*x) = width - content_width;
+  } else {
+    (*x) = 0;
+  }
+
+  if (flags & ALIGN_Y_CTR) {
+    (*y) = (height - content_height) / 2;
+  } else if (flags & ALIGN_BOTTOM) {
+    (*y) = height - content_height;
+  } else {
+    (*y) = 0;
+  }
+
+  if ((*x) < 0)
+    (*x) = 0;
+  if ((*y) < 0)
+    (*y) = 0;
+}
+
+void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
+                                   ...) {
+  int target_x;
+  int target_y;
+  int str_len;
+  va_list args;
+  va_list args_copy;
+
+  va_start(args, format);
+
+  va_copy(args_copy, args);
+  str_len = vsnprintf(NULL, 0, format, args_copy);
+  va_end(args_copy);
+
+  get_aligment_coordinates(&target_x, &target_y, wid->width, wid->height,
+                           str_len, 0, flags);
+
+  vputstring_in_widgetf(wid, target_x, target_y, format, args);
+
+  va_end(args);
+}
+
+void create_widget_aligment(struct widget *wid, int flags) {
+  int target_x;
+  int target_y;
+
+  get_aligment_coordinates(&target_x, &target_y, wid->parent->width,
+                           wid->parent->height, wid->width, wid->height, flags);
 }

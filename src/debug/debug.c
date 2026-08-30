@@ -14,7 +14,7 @@ int debug_fd;
 
 void init_debug() {
   mode_t file_flags = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-  debug_fd = open("debug_file.log", O_CREAT | O_RDWR | O_APPEND, file_flags);
+  debug_fd = open("debug_file.log", O_CREAT | O_RDWR | O_TRUNC, file_flags);
 
   if (debug_fd == -1) {
     errExitErrnoClear("open");

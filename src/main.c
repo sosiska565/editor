@@ -23,6 +23,9 @@ int main(int argc, char *argv[]) {
                                   {"version", no_argument, NULL, 'v'},
                                   {NULL, 0, NULL, 0}};
 
+  init_debug();
+  write_debug_info("Debug init");
+
   if (argc < 2) {
     print_help(argv[0]);
     exit(EXIT_FAILURE);
@@ -45,17 +48,13 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  init_debug();
-
-  write_debug_info("Debug init");
-
   init_terminal();
 
   write_debug_info("Terminal init %dx%d", term.width, term.height);
 
   struct widget *display_wid =
-      init_display(0, 0, term.height, term.width, TERMINAL_COLOR_BLUE_FG,
-                   TERMINAL_COLOR_RED_BG);
+      init_display(0, 0, term.height, term.width, TERMINAL_COLOR_WHITE_FG,
+                   TERMINAL_COLOR_BLACK_BG);
 
   init_signal_handler();
 

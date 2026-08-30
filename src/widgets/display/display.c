@@ -3,10 +3,12 @@
 #include "../../terminal/terminal.h"
 #include "../bottombar/bottombar.h"
 #include "../clock/clock.h"
+#include "../topbar/topbar.h"
 
 static struct widget display_wid;
 static struct widget *clock_wid;
 static struct widget *bottombar_wid;
+static struct widget *topbar_wid;
 
 struct widget *init_display(int x, int y, int height, int width, int fg_color,
                             int bg_color) {
@@ -19,14 +21,21 @@ struct widget *init_display(int x, int y, int height, int width, int fg_color,
 
   create_widget_debug(&display_wid);
 
-  bottombar_wid =
-      init_bottombar(0, term.height - 1, 1, term.width, TERMINAL_COLOR_BLACK_FG,
-                     TERMINAL_COLOR_WHITE_BG);
+  // init bottombar and clock
+  bottombar_wid = init_bottombar(display_wid.left, display_wid.height - 1, 1,
+                                 display_wid.width, TERMINAL_COLOR_BLACK_FG,
+                                 TERMINAL_COLOR_WHITE_BG);
 
   clock_wid = init_clock(bottombar_wid->right - 8, 0, TERMINAL_COLOR_BLACK_FG,
                          TERMINAL_COLOR_WHITE_BG);
 
+  // init topbar
+  topbar_wid =
+      init_topbar(display_wid.left, display_wid.top, 1, display_wid.width,
+                  TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
+
   add_children(&display_wid, bottombar_wid);
+  add_children(&display_wid, topbar_wid);
   add_children(bottombar_wid, clock_wid);
 
   return &display_wid;
@@ -36,12 +45,15 @@ void render_display() {
   render(&display_wid);
   render_bottombar();
   render_clock();
+  render_topbar();
 }
 void destroy_display() {
   remove_children(&display_wid, bottombar_wid);
   remove_children(bottombar_wid, clock_wid);
+  remove_children(&display_wid, topbar_wid);
 
   destroy_widget_debug(&display_wid);
   destroy_widget_debug(bottombar_wid);
   destroy_widget_debug(clock_wid);
+  destroy_topbar();
 }

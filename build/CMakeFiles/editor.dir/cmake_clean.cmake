@@ -20,6 +20,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/editor.dir/src/widgets/clock/clock.c.o.d"
   "CMakeFiles/editor.dir/src/widgets/display/display.c.o"
   "CMakeFiles/editor.dir/src/widgets/display/display.c.o.d"
+  "CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o"
+  "CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o.d"
   "editor"
   "editor.pdb"
 )
