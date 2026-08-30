@@ -6,6 +6,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o.d"
   "CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o"
   "CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o.d"
+  "CMakeFiles/editor.dir/src/info.c.o"
+  "CMakeFiles/editor.dir/src/info.c.o.d"
   "CMakeFiles/editor.dir/src/main.c.o"
   "CMakeFiles/editor.dir/src/main.c.o.d"
   "CMakeFiles/editor.dir/src/terminal/terminal.c.o"

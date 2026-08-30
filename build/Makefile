@@ -208,6 +208,30 @@ src/handlers/signalHandlers/signalHandlers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.s
 .PHONY : src/handlers/signalHandlers/signalHandlers.c.s
 
+src/info.o: src/info.c.o
+.PHONY : src/info.o
+
+# target to build an object file
+src/info.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/info.c.o
+.PHONY : src/info.c.o
+
+src/info.i: src/info.c.i
+.PHONY : src/info.i
+
+# target to preprocess a source file
+src/info.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/info.c.i
+.PHONY : src/info.c.i
+
+src/info.s: src/info.c.s
+.PHONY : src/info.s
+
+# target to generate assembly for a file
+src/info.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/info.c.s
+.PHONY : src/info.c.s
+
 src/main.o: src/main.c.o
 .PHONY : src/main.o
 
@@ -371,6 +395,9 @@ help:
 	@echo "... src/handlers/signalHandlers/signalHandlers.o"
 	@echo "... src/handlers/signalHandlers/signalHandlers.i"
 	@echo "... src/handlers/signalHandlers/signalHandlers.s"
+	@echo "... src/info.o"
+	@echo "... src/info.i"
+	@echo "... src/info.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

@@ -18,4 +18,5 @@ add_executable(
   src/widgets/bottombar/bottombar.c
   src/widgets/display/display.c
   src/debug/debug.c
+  src/info.c
 )

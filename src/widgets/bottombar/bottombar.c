@@ -1,5 +1,4 @@
 #include "bottombar.h"
-
 static struct widget bottombar_wid;
 
 struct widget *init_bottombar(int x, int y, int height, int width, int fg_color,

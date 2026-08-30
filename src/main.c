@@ -1,5 +1,6 @@
 #include "debug/debug.h"
 #include "handlers/signalHandlers/signalHandlers.h"
+#include "info.h"
 #include "terminal/terminal.h"
 #include "widget/widget.h"
 #include "widgets/display/display.h"
@@ -7,26 +8,19 @@
 
 #include <fcntl.h>
 #include <getopt.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
 enum { GEN_CONFIG = 1000 };
 
-void print_help(char *argv1) {
-  fprintf(stderr, "Usage:\n\t%s [options] ... FILE", argv1);
-  fprintf(stderr, "\n\nOptions:");
-  fprintf(stderr, "\n\t-h, --help\tPrint this message");
-  fprintf(stderr, "\n\t--gen-config\tGenerate config");
-}
-
 int main(int argc, char *argv[]) {
   int opt;
-  char *short_options = "h";
+  char *short_options = "hv";
   int fd;
   struct option long_options[] = {{"help", no_argument, NULL, 'h'},
                                   {"gen-config", no_argument, NULL, GEN_CONFIG},
+                                  {"version", no_argument, NULL, 'v'},
                                   {NULL, 0, NULL, 0}};
 
   if (argc < 2) {
@@ -39,7 +33,10 @@ int main(int argc, char *argv[]) {
     switch (opt) {
     case 'h':
       print_help(argv[0]);
-      exit(EXIT_FAILURE);
+      exit(EXIT_SUCCESS);
+    case 'v':
+      print_version();
+      exit(EXIT_SUCCESS);
     case GEN_CONFIG:
       // TODO: make gen-config
       exit(EXIT_SUCCESS);

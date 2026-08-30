@@ -224,6 +224,7 @@ CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o: /home/egor
 CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
   /home/egor/editor/src/debug/debug.h \
   /home/egor/editor/src/handlers/signalHandlers/signalHandlers.h \
+  /home/egor/editor/src/info.h \
   /home/egor/editor/src/terminal/terminal.h \
   /home/egor/editor/src/widget/widget.h \
   /home/egor/editor/src/widget/widget.h \
@@ -261,7 +262,6 @@ CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
   /usr/include/bits/select.h \
   /usr/include/bits/stat.h \
   /usr/include/bits/stdint-intn.h \
-  /usr/include/bits/stdio_lim.h \
   /usr/include/bits/stdlib-float.h \
   /usr/include/bits/struct_mutex.h \
   /usr/include/bits/struct_rwlock.h \
@@ -270,18 +270,11 @@ CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
   /usr/include/bits/time64.h \
   /usr/include/bits/timesize.h \
   /usr/include/bits/types.h \
-  /usr/include/bits/types/FILE.h \
-  /usr/include/bits/types/__FILE.h \
-  /usr/include/bits/types/__fpos64_t.h \
-  /usr/include/bits/types/__fpos_t.h \
-  /usr/include/bits/types/__mbstate_t.h \
   /usr/include/bits/types/__sigset_t.h \
   /usr/include/bits/types/clock_t.h \
   /usr/include/bits/types/clockid_t.h \
-  /usr/include/bits/types/cookie_io_functions_t.h \
   /usr/include/bits/types/once_flag.h \
   /usr/include/bits/types/sigset_t.h \
-  /usr/include/bits/types/struct_FILE.h \
   /usr/include/bits/types/struct_timespec.h \
   /usr/include/bits/types/struct_timeval.h \
   /usr/include/bits/types/time_t.h \
@@ -302,7 +295,6 @@ CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
   /usr/include/linux/ioctl.h \
   /usr/include/linux/sockios.h \
   /usr/include/stdc-predef.h \
-  /usr/include/stdio.h \
   /usr/include/stdlib.h \
   /usr/include/sys/cdefs.h \
   /usr/include/sys/ioctl.h \
@@ -310,7 +302,6 @@ CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
   /usr/include/sys/ttydefaults.h \
   /usr/include/sys/types.h \
   /usr/include/unistd.h \
-  /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdarg.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stddef.h
 
 CMakeFiles/editor.dir/src/terminal/terminal.c.o: /home/egor/editor/src/terminal/terminal.c \
@@ -599,6 +590,8 @@ CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o:
 
 /usr/include/sys/ioctl.h:
 
+/usr/include/linux/sockios.h:
+
 /usr/include/bits/types/struct_timespec.h:
 
 /usr/include/bits/types/locale_t.h:
@@ -729,8 +722,6 @@ CMakeFiles/editor.dir/src/widgets/display/display.c.o:
 
 /usr/include/bits/ioctl-types.h:
 
-/usr/include/linux/sockios.h:
-
 /usr/include/bits/cloexec.h:
 
 /usr/include/bits/getopt_posix.h:
@@ -754,6 +745,8 @@ CMakeFiles/editor.dir/src/widgets/display/display.c.o:
 /usr/include/bits/select.h:
 
 /usr/include/bits/struct_mutex.h:
+
+/home/egor/editor/src/info.h:
 
 /home/egor/editor/src/debug/debug.c:
 
