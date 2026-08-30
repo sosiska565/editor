@@ -1,0 +1,3 @@
+/home/egor/editor/build/CMakeFiles/editor.dir
+/home/egor/editor/build/CMakeFiles/edit_cache.dir
+/home/egor/editor/build/CMakeFiles/rebuild_cache.dir
