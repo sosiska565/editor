@@ -160,6 +160,30 @@ src/debug/debug.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/debug/debug.c.s
 .PHONY : src/debug/debug.c.s
 
+src/file/file.o: src/file/file.c.o
+.PHONY : src/file/file.o
+
+# target to build an object file
+src/file/file.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/file/file.c.o
+.PHONY : src/file/file.c.o
+
+src/file/file.i: src/file/file.c.i
+.PHONY : src/file/file.i
+
+# target to preprocess a source file
+src/file/file.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/file/file.c.i
+.PHONY : src/file/file.c.i
+
+src/file/file.s: src/file/file.c.s
+.PHONY : src/file/file.s
+
+# target to generate assembly for a file
+src/file/file.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/file/file.c.s
+.PHONY : src/file/file.c.s
+
 src/handlers/errorHandlers/errorHandlers.o: src/handlers/errorHandlers/errorHandlers.c.o
 .PHONY : src/handlers/errorHandlers/errorHandlers.o
 
@@ -376,6 +400,30 @@ src/widgets/display/display.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/display/display.c.s
 .PHONY : src/widgets/display/display.c.s
 
+src/widgets/editor/editor.o: src/widgets/editor/editor.c.o
+.PHONY : src/widgets/editor/editor.o
+
+# target to build an object file
+src/widgets/editor/editor.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/editor/editor.c.o
+.PHONY : src/widgets/editor/editor.c.o
+
+src/widgets/editor/editor.i: src/widgets/editor/editor.c.i
+.PHONY : src/widgets/editor/editor.i
+
+# target to preprocess a source file
+src/widgets/editor/editor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/editor/editor.c.i
+.PHONY : src/widgets/editor/editor.c.i
+
+src/widgets/editor/editor.s: src/widgets/editor/editor.c.s
+.PHONY : src/widgets/editor/editor.s
+
+# target to generate assembly for a file
+src/widgets/editor/editor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/widgets/editor/editor.c.s
+.PHONY : src/widgets/editor/editor.c.s
+
 src/widgets/topbar/topbar.o: src/widgets/topbar/topbar.c.o
 .PHONY : src/widgets/topbar/topbar.o
 
@@ -413,6 +461,9 @@ help:
 	@echo "... src/debug/debug.o"
 	@echo "... src/debug/debug.i"
 	@echo "... src/debug/debug.s"
+	@echo "... src/file/file.o"
+	@echo "... src/file/file.i"
+	@echo "... src/file/file.s"
 	@echo "... src/handlers/errorHandlers/errorHandlers.o"
 	@echo "... src/handlers/errorHandlers/errorHandlers.i"
 	@echo "... src/handlers/errorHandlers/errorHandlers.s"
@@ -440,6 +491,9 @@ help:
 	@echo "... src/widgets/display/display.o"
 	@echo "... src/widgets/display/display.i"
 	@echo "... src/widgets/display/display.s"
+	@echo "... src/widgets/editor/editor.o"
+	@echo "... src/widgets/editor/editor.i"
+	@echo "... src/widgets/editor/editor.s"
 	@echo "... src/widgets/topbar/topbar.o"
 	@echo "... src/widgets/topbar/topbar.i"
 	@echo "... src/widgets/topbar/topbar.s"

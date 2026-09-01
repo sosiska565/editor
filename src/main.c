@@ -1,13 +1,14 @@
 #include "debug/debug.h"
+#include "file/file.h"
 #include "handlers/signalHandlers/signalHandlers.h"
 #include "info.h"
 #include "terminal/terminal.h"
 #include "widget/widget.h"
 #include "widgets/display/display.h"
-#include <asm-generic/ioctls.h>
 
 #include <fcntl.h>
 #include <getopt.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -57,13 +58,16 @@ int main(int argc, char *argv[]) {
                    TERMINAL_COLOR_BLACK_BG);
 
   init_signal_handler();
-
   write_debug_info("Signal handler init");
+
+  fd = open_file(argv[argc - 1]);
+  write_debug_info("Open file %s fd: %d", argv[argc - 1], fd);
+
   write_debug_info("Start main loop");
 
   while (1) {
     render_display();
-    sleep(1);
+    flush_buffet_to_screen();
   }
 
   destroy_display();

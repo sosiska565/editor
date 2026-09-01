@@ -1,9 +1,20 @@
 #ifndef TERMINAL
 #define TERMINAL
 
+struct cell {
+  char ch;
+  int fg_color;
+  int bg_color;
+};
+
 struct terminal {
   int width;
   int height;
+  int cursor_x;
+  int cursor_y;
+
+  struct cell *cells;
+  struct cell *prev_cells;
 
   int top;
   int bottom;
@@ -31,8 +42,12 @@ struct terminal {
 #define TERMINAL_DEFAULT_COLOR 0
 
 void init_terminal();
-void move_cursor(int x, int y);
+void move_cursor_terminal(int x, int y);
 void exit_terminal();
+void hide_terminal_cursor();
+void show_terminal_cursor();
+void flush_buffet_to_screen();
+void change_color_terminal(int fg, int bg);
 
 extern struct terminal term;
 

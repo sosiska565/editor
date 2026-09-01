@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-01T23:19:04.777519472+03:00",
+  "data": {
+    "CMAKE_C_STANDART_REQURED": {
+      "location": {
+        "uri": "file:///home/egor/editor/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 5,
+            "character": 4
+          },
+          "end": {
+            "line": 5,
+            "character": 28
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/egor/editor/CMakeLists.txt",
+      "is_function": false
+    },
+    "CMAKE_C_STANDART": {
+      "location": {
+        "uri": "file:///home/egor/editor/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 4,
+            "character": 4
+          },
+          "end": {
+            "line": 4,
+            "character": 20
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/egor/editor/CMakeLists.txt",
+      "is_function": false
+    }
+  }
+}

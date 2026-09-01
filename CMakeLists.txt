@@ -20,4 +20,6 @@ add_executable(
   src/debug/debug.c
   src/info.c
   src/widgets/topbar/topbar.c
+  src/file/file.c
+  src/widgets/editor/editor.c
 )

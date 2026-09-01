@@ -52,7 +52,6 @@ void putstring_in_widget(struct widget *wid, char *str, int x, int y);
 void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...);
 void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
                                    ...);
-void create_widget_aligment(struct widget *wid, int flags);
 
 void create_widget_debug(struct widget *wid);
 int destroy_widget_debug(struct widget *wid);

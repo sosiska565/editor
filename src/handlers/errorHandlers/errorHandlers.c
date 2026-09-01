@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../../debug/debug.h"
+
 void errUsage(char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -20,11 +22,13 @@ void errUsage(char *format, ...) {
 }
 
 void errExitErrno(char *str) {
+  write_debug_err(str);
   perror(str);
   exit(errno);
 }
 
 void errExitErrnoClear(char *str) {
   system("clear");
+  write_debug_err(str);
   errExitErrno(str);
 }

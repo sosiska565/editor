@@ -1,8 +1,10 @@
 #include "terminal.h"
 
+#include "../debug/debug.h"
 #include <asm-generic/ioctls.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 
@@ -26,8 +28,16 @@ void enable_raw_mode() {
   tcsetattr(1, TCSAFLUSH, &raw);
 }
 
+void clean_cells_buffer() {
+  for (int i = 0; i < term.width * term.height; i++) {
+    term.cells[i].ch = ' ';
+    term.cells[i].bg_color = TERMINAL_DEFAULT_COLOR;
+    term.cells[i].fg_color = TERMINAL_DEFAULT_COLOR;
+  }
+}
+
 void init_terminal() {
-  printf("\033[?1049h\033[?25l");
+  printf("\033[?1049h");
   fflush(stdout);
 
   struct winsize w;
@@ -44,6 +54,15 @@ void init_terminal() {
   term.left = 0;
   term.right = w.ws_col;
 
+  term.cells = malloc(term.width * term.height * sizeof(struct cell));
+  term.prev_cells = malloc(term.width * term.height * sizeof(struct cell));
+
+  clean_cells_buffer();
+  move_cursor_terminal(0, 0);
+
+  memcpy(term.prev_cells, term.cells,
+         term.width * term.height * sizeof(struct cell));
+
   enable_raw_mode();
 }
 
@@ -52,4 +71,49 @@ void exit_terminal() {
   exit(EXIT_SUCCESS);
 }
 
-void move_cursor(int x, int y) { printf("\033[%d;%dH", y + 1, x + 1); }
+void move_cursor_terminal(int x, int y) {
+  printf("\033[%d;%dH", y + 1, x + 1);
+  fflush(stdout);
+  write_debug_info("Cursor: x:%d y:%d", x, y);
+}
+
+void hide_terminal_cursor() { printf("\033[?25l"); }
+void show_terminal_cursor() { printf("\033[?25h"); }
+
+void change_color_terminal(int fg, int bg) { printf("\033[%d;%dm", fg, bg); }
+
+void flush_buffet_to_screen() {
+  int last_fg = -1;
+  int last_bg = -1;
+
+  for (int i = 0; i < term.height; i++) {
+    for (int j = 0; j < term.width; j++) {
+      int idx = i * term.width + j;
+
+      struct cell current_cell = term.cells[idx];
+      struct cell prev_cell = term.prev_cells[idx];
+
+      if (current_cell.ch == prev_cell.ch &&
+          current_cell.bg_color == prev_cell.bg_color &&
+          current_cell.fg_color == prev_cell.fg_color) {
+        continue;
+      }
+
+      move_cursor_terminal(j, i);
+
+      if (current_cell.fg_color != last_fg ||
+          current_cell.bg_color != last_bg) {
+        change_color_terminal(current_cell.fg_color, current_cell.bg_color);
+        last_bg = current_cell.bg_color;
+        last_fg = current_cell.fg_color;
+      }
+
+      putchar(current_cell.ch);
+    }
+  }
+
+  memcpy(term.prev_cells, term.cells,
+         term.width * term.height * sizeof(struct cell));
+  printf("\033[0m");
+  fflush(stdout);
+}

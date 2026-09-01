@@ -168,16 +168,28 @@ int remove_children(struct widget *parent_wid, struct widget *wid) {
 }
 
 void render(struct widget *wid) {
+  hide_terminal_cursor();
+
   for (int i = 0; i < wid->height; i++) {
     for (int j = 0; j < wid->width; j++) {
-      move_cursor(j + wid->x, i + wid->y);
-      printf("\033[%d;%dm", wid->fg_color, wid->bg_color);
-      putchar(wid->content[i * wid->width + j]);
+      int screen_x = wid->x + j;
+      int screen_y = wid->y + i;
+
+      if (screen_x >= 0 && screen_x < term.width && screen_y >= 0 &&
+          screen_y < term.height) {
+
+        int buf_idx = screen_y * term.width + screen_x;
+        int wid_idx = i * wid->width + j;
+
+        term.cells[buf_idx].ch = wid->content[wid_idx];
+        term.cells[buf_idx].fg_color = wid->fg_color;
+        term.cells[buf_idx].bg_color = wid->bg_color;
+      }
     }
   }
 
-  printf("\033[0m");
-  fflush(stdout);
+  move_cursor_terminal(term.cursor_x, term.cursor_y);
+  show_terminal_cursor();
 }
 
 void convert_local_coordinates_to_global(int *x, int *y, int wid_x, int wid_y) {
@@ -314,12 +326,4 @@ void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
   vputstring_in_widgetf(wid, target_x, target_y, format, args);
 
   va_end(args);
-}
-
-void create_widget_aligment(struct widget *wid, int flags) {
-  int target_x;
-  int target_y;
-
-  get_aligment_coordinates(&target_x, &target_y, wid->parent->width,
-                           wid->parent->height, wid->width, wid->height, flags);
 }

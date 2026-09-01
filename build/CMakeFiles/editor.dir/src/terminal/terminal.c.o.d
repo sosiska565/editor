@@ -1,6 +1,7 @@
 CMakeFiles/editor.dir/src/terminal/terminal.c.o: \
  /home/egor/editor/src/terminal/terminal.c /usr/include/stdc-predef.h \
  /home/egor/editor/src/terminal/terminal.h \
+ /home/egor/editor/src/terminal/../debug/debug.h \
  /usr/include/asm-generic/ioctls.h /usr/include/linux/ioctl.h \
  /usr/include/asm/ioctl.h /usr/include/asm-generic/ioctl.h \
  /usr/include/stdio.h /usr/include/bits/libc-header-start.h \
@@ -34,6 +35,8 @@ CMakeFiles/editor.dir/src/terminal/terminal.c.o: \
  /usr/include/bits/atomic_wide_counter.h /usr/include/bits/struct_mutex.h \
  /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
  /usr/include/bits/types/once_flag.h /usr/include/bits/stdlib-float.h \
+ /usr/include/string.h /usr/include/bits/types/locale_t.h \
+ /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
  /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h \
  /usr/include/asm/ioctls.h /usr/include/linux/sockios.h \
  /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \

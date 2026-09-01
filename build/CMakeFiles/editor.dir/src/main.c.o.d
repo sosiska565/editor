@@ -1,12 +1,11 @@
 CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
  /usr/include/stdc-predef.h /home/egor/editor/src/debug/debug.h \
+ /home/egor/editor/src/file/file.h \
  /home/egor/editor/src/handlers/signalHandlers/signalHandlers.h \
  /home/egor/editor/src/info.h /home/egor/editor/src/terminal/terminal.h \
  /home/egor/editor/src/widget/widget.h \
  /home/egor/editor/src/widgets/display/display.h \
  /home/egor/editor/src/widgets/display/../../widget/widget.h \
- /usr/include/asm-generic/ioctls.h /usr/include/linux/ioctl.h \
- /usr/include/asm/ioctl.h /usr/include/asm-generic/ioctl.h \
  /usr/include/fcntl.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/bits/wordsize.h \
  /usr/include/bits/timesize.h /usr/include/sys/cdefs.h \
@@ -19,10 +18,16 @@ CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
  /usr/include/bits/types/time_t.h /usr/include/bits/stat.h \
  /usr/include/bits/struct_stat.h /usr/include/getopt.h \
  /usr/include/bits/getopt_core.h /usr/include/bits/getopt_ext.h \
- /usr/include/stdlib.h /usr/include/bits/libc-header-start.h \
+ /usr/include/stdio.h /usr/include/bits/libc-header-start.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stddef.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdarg.h \
+ /usr/include/bits/types/__fpos_t.h /usr/include/bits/types/__mbstate_t.h \
+ /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
+ /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
+ /usr/include/bits/types/cookie_io_functions_t.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
+ /usr/include/bits/floatn-common.h /usr/include/stdlib.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/bits/floatn.h /usr/include/bits/floatn-common.h \
  /usr/include/sys/types.h /usr/include/bits/types/clock_t.h \
  /usr/include/bits/types/clockid_t.h /usr/include/bits/types/timer_t.h \
  /usr/include/bits/stdint-intn.h /usr/include/endian.h \
@@ -36,7 +41,9 @@ CMakeFiles/editor.dir/src/main.c.o: /home/egor/editor/src/main.c \
  /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
  /usr/include/bits/types/once_flag.h /usr/include/bits/stdlib-float.h \
  /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h \
- /usr/include/asm/ioctls.h /usr/include/linux/sockios.h \
+ /usr/include/asm/ioctls.h /usr/include/asm-generic/ioctls.h \
+ /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h \
+ /usr/include/asm-generic/ioctl.h /usr/include/linux/sockios.h \
  /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
  /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
  /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h \

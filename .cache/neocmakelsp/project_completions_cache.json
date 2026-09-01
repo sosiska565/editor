@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-01T23:19:04.777461531+03:00",
+  "data": {
+    "/home/egor/editor/CMakeLists.txt": [
+      {
+        "label": "CMAKE_C_STANDART",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/egor/editor/CMakeLists.txt"
+      },
+      {
+        "label": "CMAKE_C_STANDART_REQURED",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/egor/editor/CMakeLists.txt"
+      }
+    ]
+  }
+}

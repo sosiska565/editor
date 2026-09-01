@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/egor/editor/src/debug/debug.c" "CMakeFiles/editor.dir/src/debug/debug.c.o" "gcc" "CMakeFiles/editor.dir/src/debug/debug.c.o.d"
+  "/home/egor/editor/src/file/file.c" "CMakeFiles/editor.dir/src/file/file.c.o" "gcc" "CMakeFiles/editor.dir/src/file/file.c.o.d"
   "/home/egor/editor/src/handlers/errorHandlers/errorHandlers.c" "CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o" "gcc" "CMakeFiles/editor.dir/src/handlers/errorHandlers/errorHandlers.c.o.d"
   "/home/egor/editor/src/handlers/signalHandlers/signalHandlers.c" "CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o" "gcc" "CMakeFiles/editor.dir/src/handlers/signalHandlers/signalHandlers.c.o.d"
   "/home/egor/editor/src/info.c" "CMakeFiles/editor.dir/src/info.c.o" "gcc" "CMakeFiles/editor.dir/src/info.c.o.d"
@@ -18,6 +19,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/egor/editor/src/widgets/bottombar/bottombar.c" "CMakeFiles/editor.dir/src/widgets/bottombar/bottombar.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/bottombar/bottombar.c.o.d"
   "/home/egor/editor/src/widgets/clock/clock.c" "CMakeFiles/editor.dir/src/widgets/clock/clock.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/clock/clock.c.o.d"
   "/home/egor/editor/src/widgets/display/display.c" "CMakeFiles/editor.dir/src/widgets/display/display.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/display/display.c.o.d"
+  "/home/egor/editor/src/widgets/editor/editor.c" "CMakeFiles/editor.dir/src/widgets/editor/editor.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/editor/editor.c.o.d"
   "/home/egor/editor/src/widgets/topbar/topbar.c" "CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o" "gcc" "CMakeFiles/editor.dir/src/widgets/topbar/topbar.c.o.d"
   "" "editor" "gcc" "CMakeFiles/editor.dir/link.d"
   )

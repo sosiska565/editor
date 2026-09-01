@@ -3,12 +3,14 @@
 #include "../../terminal/terminal.h"
 #include "../bottombar/bottombar.h"
 #include "../clock/clock.h"
+#include "../editor/editor.h"
 #include "../topbar/topbar.h"
 
 static struct widget display_wid;
 static struct widget *clock_wid;
 static struct widget *bottombar_wid;
 static struct widget *topbar_wid;
+static struct widget *editor_wid;
 
 struct widget *init_display(int x, int y, int height, int width, int fg_color,
                             int bg_color) {
@@ -34,9 +36,18 @@ struct widget *init_display(int x, int y, int height, int width, int fg_color,
       init_topbar(display_wid.left, display_wid.top, 1, display_wid.width,
                   TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
 
+  editor_wid = init_editor(0, display_wid.y + 1, display_wid.height - 2,
+                           display_wid.width, TERMINAL_COLOR_WHITE_FG,
+                           TERMINAL_COLOR_BLACK_BG);
+
   add_children(&display_wid, bottombar_wid);
   add_children(&display_wid, topbar_wid);
   add_children(bottombar_wid, clock_wid);
+  add_children(&display_wid, editor_wid);
+
+  term.cursor_x = 10;
+  term.cursor_y = 10;
+  move_cursor_terminal(10, 10);
 
   return &display_wid;
 }
@@ -46,14 +57,17 @@ void render_display() {
   render_bottombar();
   render_clock();
   render_topbar();
+  render_editor();
 }
 void destroy_display() {
   remove_children(&display_wid, bottombar_wid);
   remove_children(bottombar_wid, clock_wid);
   remove_children(&display_wid, topbar_wid);
+  remove_children(&display_wid, editor_wid);
 
-  destroy_widget_debug(&display_wid);
-  destroy_widget_debug(bottombar_wid);
-  destroy_widget_debug(clock_wid);
+  destroy_display();
+  destroy_bottombar();
   destroy_topbar();
+  destroy_editor();
+  destroy_clock();
 }
