@@ -45,10 +45,6 @@ struct widget *init_display(int x, int y, int height, int width, int fg_color,
   add_children(bottombar_wid, clock_wid);
   add_children(&display_wid, editor_wid);
 
-  term.cursor_x = 10;
-  term.cursor_y = 10;
-  move_cursor_terminal(10, 10);
-
   return &display_wid;
 }
 

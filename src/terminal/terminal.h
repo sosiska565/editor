@@ -48,6 +48,7 @@ void hide_terminal_cursor();
 void show_terminal_cursor();
 void flush_buffet_to_screen();
 void change_color_terminal(int fg, int bg);
+void clean_cells_buffer();
 
 extern struct terminal term;
 

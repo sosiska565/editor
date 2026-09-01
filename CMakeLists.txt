@@ -22,4 +22,5 @@ add_executable(
   src/widgets/topbar/topbar.c
   src/file/file.c
   src/widgets/editor/editor.c
+  src/handlers/keyHandler/keyHandler.c
 )

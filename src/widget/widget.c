@@ -168,8 +168,6 @@ int remove_children(struct widget *parent_wid, struct widget *wid) {
 }
 
 void render(struct widget *wid) {
-  hide_terminal_cursor();
-
   for (int i = 0; i < wid->height; i++) {
     for (int j = 0; j < wid->width; j++) {
       int screen_x = wid->x + j;
@@ -188,6 +186,7 @@ void render(struct widget *wid) {
     }
   }
 
+  hide_terminal_cursor();
   move_cursor_terminal(term.cursor_x, term.cursor_y);
   show_terminal_cursor();
 }

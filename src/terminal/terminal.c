@@ -74,7 +74,6 @@ void exit_terminal() {
 void move_cursor_terminal(int x, int y) {
   printf("\033[%d;%dH", y + 1, x + 1);
   fflush(stdout);
-  write_debug_info("Cursor: x:%d y:%d", x, y);
 }
 
 void hide_terminal_cursor() { printf("\033[?25l"); }
@@ -83,6 +82,8 @@ void show_terminal_cursor() { printf("\033[?25h"); }
 void change_color_terminal(int fg, int bg) { printf("\033[%d;%dm", fg, bg); }
 
 void flush_buffet_to_screen() {
+  hide_terminal_cursor();
+
   int last_fg = -1;
   int last_bg = -1;
 
@@ -115,5 +116,6 @@ void flush_buffet_to_screen() {
   memcpy(term.prev_cells, term.cells,
          term.width * term.height * sizeof(struct cell));
   printf("\033[0m");
+  show_terminal_cursor();
   fflush(stdout);
 }

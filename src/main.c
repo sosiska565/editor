@@ -1,13 +1,17 @@
 #include "debug/debug.h"
 #include "file/file.h"
+#include "handlers/keyHandler/keyHandler.h"
 #include "handlers/signalHandlers/signalHandlers.h"
 #include "info.h"
 #include "terminal/terminal.h"
 #include "widget/widget.h"
 #include "widgets/display/display.h"
 
+#include "handlers/errorHandlers/errorHandlers.h"
+#include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -15,9 +19,8 @@
 enum { GEN_CONFIG = 1000 };
 
 int main(int argc, char *argv[]) {
-  int opt;
+  int opt, fd, flags;
   char *short_options = "hv";
-  int fd;
   struct option long_options[] = {{"help", no_argument, NULL, 'h'},
                                   {"gen-config", no_argument, NULL, GEN_CONFIG},
                                   {"version", no_argument, NULL, 'v'},
@@ -62,11 +65,37 @@ int main(int argc, char *argv[]) {
   fd = open_file(argv[argc - 1]);
   write_debug_info("Open file %s fd: %d", argv[argc - 1], fd);
 
+  init_key_handler();
+
+  // start main loop
   write_debug_info("Start main loop");
 
+  int numRead;
+  char buff[1];
+
+  move_cursor_terminal(0, 0);
+
   while (1) {
+    clean_cells_buffer();
     render_display();
     flush_buffet_to_screen();
+
+    numRead = read(0, buff, 1);
+
+    if (numRead != -1) {
+      write_debug_info("Dec: %d, Char: %c, Hex: %x", (int)buff[0], buff[0],
+                       (int)buff[0]);
+      if (buff[0] == 'q' || buff[0] == 'Q') {
+        exit(EXIT_SUCCESS);
+      } else if (buff[0] == 'j')
+        move_cursor_terminal(term.cursor_x, term.cursor_y++);
+      else if (buff[0] == 'k')
+        move_cursor_terminal(term.cursor_x, term.cursor_y--);
+      else if (buff[0] == 'h')
+        move_cursor_terminal(term.cursor_x--, term.cursor_y);
+      else if (buff[0] == 'l')
+        move_cursor_terminal(term.cursor_x++, term.cursor_y);
+    }
   }
 
   destroy_display();
