@@ -11,6 +11,7 @@ static struct widget *clock_wid;
 static struct widget *bottombar_wid;
 static struct widget *topbar_wid;
 static struct widget *editor_wid;
+static int key;
 
 struct widget *init_display(int x, int y, int height, int width, int fg_color,
                             int bg_color) {
@@ -55,6 +56,7 @@ void render_display() {
   render_topbar();
   render_editor();
 }
+
 void destroy_display() {
   remove_children(&display_wid, bottombar_wid);
   remove_children(bottombar_wid, clock_wid);

@@ -12,6 +12,7 @@ struct terminal {
   int height;
   int cursor_x;
   int cursor_y;
+  int key;
 
   struct cell *cells;
   struct cell *prev_cells;
@@ -49,6 +50,8 @@ void show_terminal_cursor();
 void flush_buffet_to_screen();
 void change_color_terminal(int fg, int bg);
 void clean_cells_buffer();
+void disable_raw_mode();
+void enable_raw_mode();
 
 extern struct terminal term;
 

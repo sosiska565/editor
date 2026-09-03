@@ -7,11 +7,8 @@
 #include "widget/widget.h"
 #include "widgets/display/display.h"
 
-#include "handlers/errorHandlers/errorHandlers.h"
-#include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -70,32 +67,16 @@ int main(int argc, char *argv[]) {
   // start main loop
   write_debug_info("Start main loop");
 
-  int numRead;
-  char buff[1];
-
-  move_cursor_terminal(0, 0);
+  term.cursor_x = 0;
+  term.cursor_y = 1;
+  move_cursor_terminal(term.cursor_x, term.cursor_y);
 
   while (1) {
+    term.key = read_key_and_parse();
+
     clean_cells_buffer();
     render_display();
     flush_buffet_to_screen();
-
-    numRead = read(0, buff, 1);
-
-    if (numRead != -1) {
-      write_debug_info("Dec: %d, Char: %c, Hex: %x", (int)buff[0], buff[0],
-                       (int)buff[0]);
-      if (buff[0] == 'q' || buff[0] == 'Q') {
-        exit(EXIT_SUCCESS);
-      } else if (buff[0] == 'j')
-        move_cursor_terminal(term.cursor_x, term.cursor_y++);
-      else if (buff[0] == 'k')
-        move_cursor_terminal(term.cursor_x, term.cursor_y--);
-      else if (buff[0] == 'h')
-        move_cursor_terminal(term.cursor_x--, term.cursor_y);
-      else if (buff[0] == 'l')
-        move_cursor_terminal(term.cursor_x++, term.cursor_y);
-    }
   }
 
   destroy_display();

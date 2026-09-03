@@ -1,6 +1,5 @@
 #include "terminal.h"
 
-#include "../debug/debug.h"
 #include <asm-generic/ioctls.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,6 +71,10 @@ void exit_terminal() {
 }
 
 void move_cursor_terminal(int x, int y) {
+  if (x <= 0 || x >= term.width)
+    term.cursor_x = 0;
+  if (y <= 0 || y >= term.height)
+    term.cursor_y = 0;
   printf("\033[%d;%dH", y + 1, x + 1);
   fflush(stdout);
 }
@@ -117,5 +120,6 @@ void flush_buffet_to_screen() {
          term.width * term.height * sizeof(struct cell));
   printf("\033[0m");
   show_terminal_cursor();
+  move_cursor_terminal(term.cursor_x, term.cursor_y);
   fflush(stdout);
 }

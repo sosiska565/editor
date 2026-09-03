@@ -185,10 +185,6 @@ void render(struct widget *wid) {
       }
     }
   }
-
-  hide_terminal_cursor();
-  move_cursor_terminal(term.cursor_x, term.cursor_y);
-  show_terminal_cursor();
 }
 
 void convert_local_coordinates_to_global(int *x, int *y, int wid_x, int wid_y) {
