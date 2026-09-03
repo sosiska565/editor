@@ -6,6 +6,7 @@ static struct widget clock_wid;
 
 struct widget *init_clock(int x, int y, int fg_color, int bg_color) {
   clock_wid = (struct widget){
+      .name = "clock",
       .x = x,
       .y = y,
       .height = 1,
@@ -14,7 +15,8 @@ struct widget *init_clock(int x, int y, int fg_color, int bg_color) {
       .bg_color = bg_color,
   };
 
-  create_widget_debug(&clock_wid);
+  if (create_widget(&clock_wid) == -1)
+    return NULL;
 
   return &clock_wid;
 }

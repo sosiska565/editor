@@ -5,14 +5,16 @@ static struct widget topbar_wid;
 
 struct widget *init_topbar(int x, int y, int height, int width, int fg_color,
                            int bg_color) {
-  topbar_wid = (struct widget){.x = x,
+  topbar_wid = (struct widget){.name = "topbar",
+                               .x = x,
                                .y = y,
                                .width = width,
                                .height = height,
                                .fg_color = fg_color,
                                .bg_color = bg_color};
 
-  create_widget_debug(&topbar_wid);
+  if (create_widget(&topbar_wid) == -1)
+    return NULL;
 
   return &topbar_wid;
 }

@@ -40,6 +40,7 @@ void errExitFprintf(char *format, ...) {
   va_start(args, format);
 
   disable_raw_mode();
+  write_debug_err(format);
   vfprintf(stderr, format, args);
   va_end(args);
 

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 struct widget *widgets = NULL;
 int widgets_counter = 0;
@@ -63,7 +64,37 @@ int remove_widget_from_id(int id) {
   return id;
 }
 
-void create_widget(struct widget *wid) {
+int exists_widget_by_name(char *name) {
+  for (int i = 0; i < widgets_counter; i++) {
+    if (strcmp(widgets[i].name, name) == 0) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+int exists_widget_by_id(int id) {
+  for (int i = 0; i < widgets_counter; i++) {
+    if (widgets[i].id == id) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+struct widget *find_widget_by_name(char *name) {
+  for (int i = 0; i < widgets_counter; i++) {
+    if (strcmp(widgets[i].name, name) == 0) {
+      return &widgets[i];
+    }
+  }
+
+  return NULL;
+}
+
+int create_widget(struct widget *wid) {
   if (wid == NULL) {
     fprintf(stderr, "widget is null");
     exit(EXIT_FAILURE);
@@ -75,6 +106,13 @@ void create_widget(struct widget *wid) {
   if (con == NULL) {
     abort();
   }
+
+  if (exists_widget_by_name(wid->name) == 1) {
+    return -1;
+  }
+
+  if (exists_widget_by_id(global_id + 1) == 1)
+    return -1;
 
   wid->id = global_id++;
   wid->childrens_counter = 0;
@@ -88,8 +126,9 @@ void create_widget(struct widget *wid) {
   wid->right = wid->x + wid->width;
   wid->center_x = wid->width / 2;
   wid->center_y = wid->height / 2;
-
   add_widget(wid);
+
+  return 0;
 }
 
 int destroy_widget(struct widget *wid) {

@@ -1,5 +1,6 @@
 #include "debug/debug.h"
 #include "file/file.h"
+#include "handlers/errorHandlers/errorHandlers.h"
 #include "handlers/keyHandler/keyHandler.h"
 #include "handlers/signalHandlers/signalHandlers.h"
 #include "info.h"
@@ -56,11 +57,11 @@ int main(int argc, char *argv[]) {
       init_display(0, 0, term.height, term.width, TERMINAL_COLOR_WHITE_FG,
                    TERMINAL_COLOR_BLACK_BG);
 
+  if (display_wid == NULL)
+    errExitFprintf("display_wid is null");
+
   init_signal_handler();
   write_debug_info("Signal handler init");
-
-  fd = open_file(argv[argc - 1]);
-  write_debug_info("Open file %s fd: %d", argv[argc - 1], fd);
 
   init_key_handler();
 
@@ -76,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     clean_cells_buffer();
     render_display();
-    flush_buffet_to_screen();
+    flush_buffer_to_screen();
   }
 
   destroy_display();

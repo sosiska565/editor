@@ -2,6 +2,7 @@
 #define WIDGET
 
 struct widget {
+  char name[50];
   int id;
   int x;
   int y;
@@ -39,7 +40,7 @@ typedef enum {
   ALIGN_CENTER_RIGHT = ALIGN_RIGHT | ALIGN_Y_CTR
 } alignment;
 
-void create_widget(struct widget *wid);
+int create_widget(struct widget *wid);
 int destroy_widget(struct widget *wid);
 void render(struct widget *wid);
 void render_all_widgets();
@@ -53,6 +54,7 @@ void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...);
 void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
                                    ...);
 
+struct widget *find_widget_by_name(char *name);
 void create_widget_debug(struct widget *wid);
 int destroy_widget_debug(struct widget *wid);
 

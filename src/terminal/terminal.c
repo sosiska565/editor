@@ -71,10 +71,6 @@ void exit_terminal() {
 }
 
 void move_cursor_terminal(int x, int y) {
-  if (x <= 0 || x >= term.width)
-    term.cursor_x = 0;
-  if (y <= 0 || y >= term.height)
-    term.cursor_y = 0;
   printf("\033[%d;%dH", y + 1, x + 1);
   fflush(stdout);
 }
@@ -84,7 +80,7 @@ void show_terminal_cursor() { printf("\033[?25h"); }
 
 void change_color_terminal(int fg, int bg) { printf("\033[%d;%dm", fg, bg); }
 
-void flush_buffet_to_screen() {
+void flush_buffer_to_screen() {
   hide_terminal_cursor();
 
   int last_fg = -1;

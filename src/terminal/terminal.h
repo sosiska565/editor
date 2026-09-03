@@ -47,7 +47,7 @@ void move_cursor_terminal(int x, int y);
 void exit_terminal();
 void hide_terminal_cursor();
 void show_terminal_cursor();
-void flush_buffet_to_screen();
+void flush_buffer_to_screen();
 void change_color_terminal(int fg, int bg);
 void clean_cells_buffer();
 void disable_raw_mode();
