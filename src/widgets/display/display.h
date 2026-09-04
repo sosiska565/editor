@@ -3,8 +3,8 @@
 
 #include "../../widget/widget.h"
 
-struct widget *init_display(int x, int y, int height, int width, int fg_color,
-                            int bg_color);
+struct widget *init_display(char *name, int x, int y, int height, int width,
+                            int fg_color, int bg_color);
 
 void render_display();
 void destroy_display();

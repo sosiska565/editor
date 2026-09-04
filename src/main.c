@@ -1,5 +1,5 @@
+#include "buffer/buffer.h"
 #include "debug/debug.h"
-#include "file/file.h"
 #include "handlers/errorHandlers/errorHandlers.h"
 #include "handlers/keyHandler/keyHandler.h"
 #include "handlers/signalHandlers/signalHandlers.h"
@@ -53,9 +53,11 @@ int main(int argc, char *argv[]) {
 
   write_debug_info("Terminal init %dx%d", term.width, term.height);
 
+  add_buffer(argv[argc - 1]);
+
   struct widget *display_wid =
-      init_display(0, 0, term.height, term.width, TERMINAL_COLOR_WHITE_FG,
-                   TERMINAL_COLOR_BLACK_BG);
+      init_display("display", 0, 0, term.height, term.width,
+                   TERMINAL_COLOR_WHITE_FG, TERMINAL_COLOR_BLACK_BG);
 
   if (display_wid == NULL)
     errExitFprintf("display_wid is null");
@@ -78,6 +80,8 @@ int main(int argc, char *argv[]) {
     clean_cells_buffer();
     render_display();
     flush_buffer_to_screen();
+
+    usleep(10000);
   }
 
   destroy_display();

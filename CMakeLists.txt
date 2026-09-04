@@ -23,5 +23,6 @@ add_executable(
   src/file/file.c
   src/widgets/editor/editor.c
   src/handlers/keyHandler/keyHandler.c
-  src/widgets/mode/mode.c
+  src/widgets/label/label.c
+  src/buffer/buffer.c
 )

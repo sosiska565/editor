@@ -43,6 +43,10 @@ int remove_widget_from_id(int id) {
     free(widgets[target_index].content);
   }
 
+  if (widgets[target_index].name != NULL) {
+    free(widgets[target_index].name);
+  }
+
   for (int i = target_index; i < widgets_counter - 1; i++) {
     widgets[i] = widgets[i + 1];
   }
@@ -94,7 +98,7 @@ struct widget *find_widget_by_name(char *name) {
   return NULL;
 }
 
-int create_widget(struct widget *wid) {
+int create_widget(char *name, struct widget *wid) {
   if (wid == NULL) {
     fprintf(stderr, "widget is null");
     exit(EXIT_FAILURE);
@@ -107,7 +111,7 @@ int create_widget(struct widget *wid) {
     abort();
   }
 
-  if (exists_widget_by_name(wid->name) == 1) {
+  if (exists_widget_by_name(name) == 1) {
     return -1;
   }
 
@@ -115,6 +119,7 @@ int create_widget(struct widget *wid) {
     return -1;
 
   wid->id = global_id++;
+  wid->name = strdup(name);
   wid->childrens_counter = 0;
   wid->childrens = NULL;
   wid->parent = NULL;
@@ -295,24 +300,6 @@ void vputstring_in_widgetf(struct widget *wid, int x, int y, char *format,
   putstring_in_widget(wid, buffer, x, y);
 
   free(buffer);
-}
-
-void create_widget_debug(struct widget *wid) {
-  create_widget(wid);
-  write_debug_info("widget %d created", wid->id);
-}
-
-int destroy_widget_debug(struct widget *wid) {
-  int id = destroy_widget(wid);
-
-  if (id < 0) {
-    write_debug_err("widget destroy err. Id: %d", id);
-    exit(EXIT_FAILURE);
-  }
-
-  write_debug_info("widget %d destroy", id);
-
-  return id;
 }
 
 void get_aligment_coordinates(int *x, int *y, int width, int height,

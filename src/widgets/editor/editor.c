@@ -1,8 +1,11 @@
 #include "editor.h"
+#include "../../buffer/buffer.h"
 #include "../../file/file.h"
+#include "../../handlers/errorHandlers/errorHandlers.h"
 #include "../../handlers/keyHandler/keyHandler.h"
 #include "../../terminal/terminal.h"
 #include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -12,8 +15,8 @@ static struct widget editor_wid;
 static int editor_mode = NORMAL_MODE;
 static char *file_buffer;
 
-struct widget *init_editor(int x, int y, int height, int width, int fg_color,
-                           int bg_color) {
+struct widget *init_editor(char *name, int x, int y, int height, int width,
+                           int fg_color, int bg_color) {
   editor_wid = (struct widget){
       .name = "editor",
       .x = x,
@@ -24,14 +27,36 @@ struct widget *init_editor(int x, int y, int height, int width, int fg_color,
       .bg_color = bg_color,
   };
 
-  if (create_widget(&editor_wid) == -1)
+  if (create_widget(name, &editor_wid) == -1)
     return NULL;
+
+  char **buflist = get_buffer_list();
+
+  if (buflist == NULL)
+    errExitFprintf("buffer list is NULL");
+
+  int fd = open_file(buflist[0]);
+
+  struct widget *topbar_wid = find_widget_by_name("topbar");
+  if (topbar_wid == NULL)
+    errExitFprintf("topbar widget is NULL");
+
+  putstring_in_widgetf_aligment(topbar_wid, ALIGN_CENTER, buflist[0]);
+
+  file_buffer = malloc(width * height);
+
+  int numRead = read(fd, file_buffer, width * height);
+
+  if (numRead == -1)
+    errExitErrno("read");
+
+  memcpy(editor_wid.content, file_buffer, width * height);
 
   return &editor_wid;
 }
 
 void change_mode(int m) {
-  struct widget *mode_wid = find_widget_by_name("mode");
+  struct widget *mode_wid = find_widget_by_name("label_mode");
   if (mode_wid == NULL)
     return;
 
@@ -66,16 +91,18 @@ void key_events_handler() {
   if ((local_y + 1) > editor_wid.height)
     term.cursor_y = editor_wid.height;
 
-  if (editor_mode != INSERT_MODE && editor_mode != COMMAND_MODE) {
-    if (term.key == KEY_ARROW_LEFT || term.key == 'h')
-      move_cursor_terminal(--term.cursor_x, term.cursor_y);
-    if (term.key == KEY_ARROW_DOWN || term.key == 'j')
-      move_cursor_terminal(term.cursor_x, ++term.cursor_y);
-    if (term.key == KEY_ARROW_RIGHT || term.key == 'l')
-      move_cursor_terminal(++term.cursor_x, term.cursor_y);
-    if (term.key == KEY_ARROW_UP || term.key == 'k')
-      move_cursor_terminal(term.cursor_x, --term.cursor_y);
-  }
+  if (term.key == KEY_ARROW_LEFT ||
+      (term.key == 'h' && editor_mode != INSERT_MODE))
+    move_cursor_terminal(--term.cursor_x, term.cursor_y);
+  if (term.key == KEY_ARROW_DOWN ||
+      (term.key == 'j' && editor_mode != INSERT_MODE))
+    move_cursor_terminal(term.cursor_x, ++term.cursor_y);
+  if (term.key == KEY_ARROW_RIGHT ||
+      (term.key == 'l' && editor_mode != INSERT_MODE))
+    move_cursor_terminal(++term.cursor_x, term.cursor_y);
+  if (term.key == KEY_ARROW_UP ||
+      (term.key == 'k' && editor_mode != INSERT_MODE))
+    move_cursor_terminal(term.cursor_x, --term.cursor_y);
 
   if (term.key == KEY_ESCAPE) {
     change_mode(NORMAL_MODE);
@@ -106,4 +133,4 @@ void render_editor() {
   render(&editor_wid);
 }
 
-void destroy_editor() { destroy_widget_debug(&editor_wid); }
+void destroy_editor() { destroy_widget(&editor_wid); }

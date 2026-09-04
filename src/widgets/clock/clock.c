@@ -4,7 +4,8 @@
 
 static struct widget clock_wid;
 
-struct widget *init_clock(int x, int y, int fg_color, int bg_color) {
+struct widget *init_clock(char *name, int x, int y, int fg_color,
+                          int bg_color) {
   clock_wid = (struct widget){
       .name = "clock",
       .x = x,
@@ -15,7 +16,7 @@ struct widget *init_clock(int x, int y, int fg_color, int bg_color) {
       .bg_color = bg_color,
   };
 
-  if (create_widget(&clock_wid) == -1)
+  if (create_widget(name, &clock_wid) == -1)
     return NULL;
 
   return &clock_wid;
@@ -37,4 +38,4 @@ void render_clock() {
 
   render(&clock_wid);
 }
-void destroy_clock() { destroy_widget_debug(&clock_wid); }
+void destroy_clock() { destroy_widget(&clock_wid); }

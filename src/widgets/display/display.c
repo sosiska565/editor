@@ -12,8 +12,8 @@ static struct widget *topbar_wid;
 static struct widget *editor_wid;
 static int key;
 
-struct widget *init_display(int x, int y, int height, int width, int fg_color,
-                            int bg_color) {
+struct widget *init_display(char *name, int x, int y, int height, int width,
+                            int fg_color, int bg_color) {
   display_wid = (struct widget){.name = "display",
                                 .x = x,
                                 .y = y,
@@ -22,21 +22,21 @@ struct widget *init_display(int x, int y, int height, int width, int fg_color,
                                 .fg_color = fg_color,
                                 .bg_color = bg_color};
 
-  if (create_widget(&display_wid) == -1)
+  if (create_widget(name, &display_wid) == -1)
     return NULL;
 
   // init bottombar and clock
-  bottombar_wid = init_bottombar(display_wid.left, display_wid.height - 1, 1,
-                                 display_wid.width, TERMINAL_COLOR_BLACK_FG,
-                                 TERMINAL_COLOR_WHITE_BG);
+  bottombar_wid = init_bottombar(
+      "bottombar", display_wid.left, display_wid.height - 1, 1,
+      display_wid.width, TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
   // init topbar
-  topbar_wid =
-      init_topbar(display_wid.left, display_wid.top, 1, display_wid.width,
-                  TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
+  topbar_wid = init_topbar("topbar", display_wid.left, display_wid.top, 1,
+                           display_wid.width, TERMINAL_COLOR_BLACK_FG,
+                           TERMINAL_COLOR_WHITE_BG);
 
-  editor_wid = init_editor(0, display_wid.y + 1, display_wid.height - 2,
-                           display_wid.width, TERMINAL_COLOR_WHITE_FG,
-                           TERMINAL_COLOR_BLACK_BG);
+  editor_wid = init_editor("editor", 0, display_wid.y + 1,
+                           display_wid.height - 2, display_wid.width,
+                           TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR);
 
   if (bottombar_wid == NULL)
     return NULL;

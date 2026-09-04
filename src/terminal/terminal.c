@@ -81,41 +81,63 @@ void show_terminal_cursor() { printf("\033[?25h"); }
 void change_color_terminal(int fg, int bg) { printf("\033[%d;%dm", fg, bg); }
 
 void flush_buffer_to_screen() {
-  hide_terminal_cursor();
+  int changed = 0;
 
-  int last_fg = -1;
-  int last_bg = -1;
-
-  for (int i = 0; i < term.height; i++) {
-    for (int j = 0; j < term.width; j++) {
-      int idx = i * term.width + j;
-
-      struct cell current_cell = term.cells[idx];
-      struct cell prev_cell = term.prev_cells[idx];
-
-      if (current_cell.ch == prev_cell.ch &&
-          current_cell.bg_color == prev_cell.bg_color &&
-          current_cell.fg_color == prev_cell.fg_color) {
-        continue;
-      }
-
-      move_cursor_terminal(j, i);
-
-      if (current_cell.fg_color != last_fg ||
-          current_cell.bg_color != last_bg) {
-        change_color_terminal(current_cell.fg_color, current_cell.bg_color);
-        last_bg = current_cell.bg_color;
-        last_fg = current_cell.fg_color;
-      }
-
-      putchar(current_cell.ch);
+  for (int i = 0; i < term.width * term.height; i++) {
+    if (term.cells[i].ch != term.prev_cells[i].ch ||
+        term.cells[i].bg_color != term.prev_cells[i].bg_color ||
+        term.cells[i].fg_color != term.prev_cells[i].fg_color) {
+      changed = 1;
+      break;
     }
   }
 
-  memcpy(term.prev_cells, term.cells,
-         term.width * term.height * sizeof(struct cell));
-  printf("\033[0m");
-  show_terminal_cursor();
-  move_cursor_terminal(term.cursor_x, term.cursor_y);
-  fflush(stdout);
+  static int prev_cursor_x = -1;
+  static int prev_cursor_y = -1;
+
+  if (changed) {
+    hide_terminal_cursor();
+
+    int last_fg = -1;
+    int last_bg = -1;
+
+    for (int i = 0; i < term.height; i++) {
+      for (int j = 0; j < term.width; j++) {
+        int idx = i * term.width + j;
+
+        struct cell current_cell = term.cells[idx];
+        struct cell prev_cell = term.prev_cells[idx];
+
+        if (current_cell.ch == prev_cell.ch &&
+            current_cell.bg_color == prev_cell.bg_color &&
+            current_cell.fg_color == prev_cell.fg_color) {
+          continue;
+        }
+
+        move_cursor_terminal(j, i);
+
+        if (current_cell.fg_color != last_fg ||
+            current_cell.bg_color != last_bg) {
+          change_color_terminal(current_cell.fg_color, current_cell.bg_color);
+          last_bg = current_cell.bg_color;
+          last_fg = current_cell.fg_color;
+        }
+
+        putchar(current_cell.ch);
+      }
+    }
+
+    memcpy(term.prev_cells, term.cells,
+           term.width * term.height * sizeof(struct cell));
+    printf("\033[0m");
+    show_terminal_cursor();
+  }
+
+  if (changed || term.cursor_x != prev_cursor_x ||
+      term.cursor_y != prev_cursor_y) {
+    move_cursor_terminal(term.cursor_x, term.cursor_y);
+    fflush(stdout);
+    prev_cursor_x = term.cursor_x;
+    prev_cursor_y = term.cursor_y;
+  }
 }
