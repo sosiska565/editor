@@ -3,7 +3,7 @@
 
 #define NAME "Editor"
 #define AUTHOR "sosiska565"
-#define VERSION "0.0.1"
+#define VERSION "0.0.2"
 #define LICENSE "GPL v3.0"
 
 void print_help(char *argv1);
