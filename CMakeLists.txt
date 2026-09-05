@@ -25,4 +25,5 @@ add_executable(
   src/handlers/keyHandler/keyHandler.c
   src/widgets/label/label.c
   src/buffer/buffer.c
+  src/widgets/cmdline/cmdline.c
 )

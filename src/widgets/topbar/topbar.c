@@ -1,29 +1,40 @@
 #include "topbar.h"
 #include <string.h>
 
-static struct widget topbar_wid;
-
 struct widget *init_topbar(char *name, int x, int y, int height, int width,
                            int fg_color, int bg_color) {
-  topbar_wid = (struct widget){.name = "topbar",
-                               .x = x,
-                               .y = y,
-                               .width = width,
-                               .height = height,
-                               .fg_color = fg_color,
-                               .bg_color = bg_color};
-
-  if (create_widget(name, &topbar_wid) == -1)
+  struct widget *bar =
+      create_widget(name, x, y, height, width, fg_color, bg_color);
+  if (bar == NULL)
     return NULL;
 
-  return &topbar_wid;
+  return bar;
 }
 
-void change_file_name(char *filename) {
-  memset(topbar_wid.content, ' ', topbar_wid.height * topbar_wid.width);
-  putstring_in_widgetf_aligment(&topbar_wid, ALIGN_CENTER, "%s", filename);
+void change_file_name(struct widget *bar, char *filename) {
+  if (bar == NULL || bar->content == NULL)
+    return;
+
+  memset(bar->content, ' ', bar->height * bar->width);
+  putstring_in_widgetf_aligment(bar, ALIGN_CENTER, "%s", filename);
 }
 
-void destroy_topbar() { destroy_widget(&topbar_wid); }
+void render_topbar(struct widget *bar) {
+  if (bar == NULL)
+    return;
 
-void render_topbar() { render(&topbar_wid); }
+  render(bar);
+}
+
+void destroy_topbar(struct widget *bar) {
+  if (bar == NULL)
+    return;
+
+  while (bar->childrens_counter > 0) {
+    struct widget *child = bar->childrens[0];
+    remove_children(bar, child);
+    destroy_widget(child);
+  }
+
+  destroy_widget(bar);
+}

@@ -13,7 +13,6 @@ enum {
   KEY_ESCAPE
 };
 
-void init_key_handler();
 int read_key_nonblock(unsigned char *buff, ssize_t size);
 int parse_key(const unsigned char *buff, ssize_t size);
 int read_key_and_parse();

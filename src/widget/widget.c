@@ -7,29 +7,30 @@
 #include <string.h>
 #include <unistd.h>
 
-struct widget *widgets = NULL;
+struct widget **widgets = NULL;
+
 int widgets_counter = 0;
 int global_id = 0;
 
 void add_widget(struct widget *wid) {
   widgets_counter++;
 
-  struct widget *new_array = (struct widget *)realloc(
-      widgets, widgets_counter * sizeof(struct widget));
+  struct widget **new_array = (struct widget **)realloc(
+      widgets, widgets_counter * sizeof(struct widget *));
 
   if (new_array == NULL) {
     abort();
   }
 
   widgets = new_array;
-  widgets[widgets_counter - 1] = *wid;
+  widgets[widgets_counter - 1] = wid;
 }
 
 int remove_widget_from_id(int id) {
   int target_index = -1;
 
   for (int i = 0; i < widgets_counter; i++) {
-    if (widgets[i].id == id) {
+    if (widgets[i]->id == id) {
       target_index = i;
       break;
     }
@@ -39,13 +40,15 @@ int remove_widget_from_id(int id) {
     return -1;
   }
 
-  if (widgets[target_index].content != NULL) {
-    free(widgets[target_index].content);
+  if (widgets[target_index]->content != NULL) {
+    free(widgets[target_index]->content);
   }
 
-  if (widgets[target_index].name != NULL) {
-    free(widgets[target_index].name);
+  if (widgets[target_index]->name != NULL) {
+    free(widgets[target_index]->name);
   }
+
+  free(widgets[target_index]);
 
   for (int i = target_index; i < widgets_counter - 1; i++) {
     widgets[i] = widgets[i + 1];
@@ -54,8 +57,8 @@ int remove_widget_from_id(int id) {
   widgets_counter--;
 
   if (widgets_counter > 0) {
-    struct widget *new_array = (struct widget *)realloc(
-        widgets, widgets_counter * sizeof(struct widget));
+    struct widget **new_array = (struct widget **)realloc(
+        widgets, widgets_counter * sizeof(struct widget *));
     if (new_array == NULL) {
       abort();
     }
@@ -64,13 +67,12 @@ int remove_widget_from_id(int id) {
     free(widgets);
     widgets = NULL;
   }
-
   return id;
 }
 
 int exists_widget_by_name(char *name) {
   for (int i = 0; i < widgets_counter; i++) {
-    if (strcmp(widgets[i].name, name) == 0) {
+    if (strcmp(widgets[i]->name, name) == 0) {
       return 1;
     }
   }
@@ -80,7 +82,7 @@ int exists_widget_by_name(char *name) {
 
 int exists_widget_by_id(int id) {
   for (int i = 0; i < widgets_counter; i++) {
-    if (widgets[i].id == id) {
+    if (widgets[i]->id == id) {
       return 1;
     }
   }
@@ -90,50 +92,65 @@ int exists_widget_by_id(int id) {
 
 struct widget *find_widget_by_name(char *name) {
   for (int i = 0; i < widgets_counter; i++) {
-    if (strcmp(widgets[i].name, name) == 0) {
-      return &widgets[i];
+    if (strcmp(widgets[i]->name, name) == 0) {
+      return widgets[i];
     }
   }
 
   return NULL;
 }
 
-int create_widget(char *name, struct widget *wid) {
-  if (wid == NULL) {
-    fprintf(stderr, "widget is null");
-    exit(EXIT_FAILURE);
-  }
-
-  char *con = (char *)malloc(wid->height * wid->width * sizeof(char));
-  memset(con, ' ', wid->height * wid->width);
-
-  if (con == NULL) {
-    abort();
-  }
-
+struct widget *create_widget(char *name, int x, int y, int height, int width,
+                             int fg_color, int bg_color) {
   if (exists_widget_by_name(name) == 1) {
-    return -1;
+    return NULL;
   }
 
-  if (exists_widget_by_id(global_id + 1) == 1)
-    return -1;
+  if (exists_widget_by_id(global_id + 1) == 1) {
+    return NULL;
+  }
+
+  struct widget *wid = (struct widget *)malloc(sizeof(struct widget));
+  if (wid == NULL) {
+    return NULL;
+  }
+
+  char *con = (char *)malloc(height * width * sizeof(char));
+  if (con == NULL) {
+    return NULL;
+  }
+  memset(con, ' ', height * width);
 
   wid->id = global_id++;
   wid->name = strdup(name);
+  if (wid->name == NULL) {
+    free(con);
+    free(wid);
+    return NULL;
+  }
+
+  wid->x = x;
+  wid->y = y;
+  wid->height = height;
+  wid->width = width;
+  wid->fg_color = fg_color;
+  wid->bg_color = bg_color;
+
   wid->childrens_counter = 0;
   wid->childrens = NULL;
   wid->parent = NULL;
   wid->content = con;
 
-  wid->top = wid->y;
-  wid->bottom = wid->y + wid->height;
-  wid->left = wid->x;
-  wid->right = wid->x + wid->width;
-  wid->center_x = wid->width / 2;
-  wid->center_y = wid->height / 2;
+  wid->top = y;
+  wid->bottom = y + height;
+  wid->left = x;
+  wid->right = x + width;
+  wid->center_x = width / 2;
+  wid->center_y = height / 2;
+
   add_widget(wid);
 
-  return 0;
+  return wid;
 }
 
 int destroy_widget(struct widget *wid) {
@@ -156,9 +173,9 @@ void add_children(struct widget *parent_wid, struct widget *wid) {
 
   parent_wid->childrens_counter++;
 
-  struct widget *new_array = (struct widget *)realloc(
+  struct widget **new_array = (struct widget **)realloc(
       parent_wid->childrens,
-      parent_wid->childrens_counter * sizeof(struct widget));
+      parent_wid->childrens_counter * sizeof(struct widget *));
 
   if (new_array == NULL) {
     perror("realloc");
@@ -171,7 +188,17 @@ void add_children(struct widget *parent_wid, struct widget *wid) {
   wid->x = parent_wid->x + wid->x;
   wid->y = parent_wid->y + wid->y;
 
-  parent_wid->childrens[parent_wid->childrens_counter - 1] = (*wid);
+  int wid_name_len = strlen(parent_wid->name) + strlen(wid->name) + 3;
+  char *wid_name = (char *)malloc(wid_name_len);
+
+  char *parent_name_start =
+      (parent_wid->name[0] == '_') ? (parent_wid->name + 1) : parent_wid->name;
+  snprintf(wid_name, wid_name_len, "_%s_%s", parent_name_start, wid->name);
+
+  free(wid->name);
+  wid->name = wid_name;
+
+  parent_wid->childrens[parent_wid->childrens_counter - 1] = wid;
 }
 
 int remove_children(struct widget *parent_wid, struct widget *wid) {
@@ -184,17 +211,10 @@ int remove_children(struct widget *parent_wid, struct widget *wid) {
     exit(EXIT_FAILURE);
   }
 
-  parent_wid->childrens_counter--;
-
-  if (parent_wid->childrens_counter == 0) {
-    free(parent_wid->childrens);
-    return -1;
-  }
-
   int target_index = -1;
 
   for (int i = 0; i < parent_wid->childrens_counter; i++) {
-    if (parent_wid->childrens[i].id == wid->id) {
+    if (parent_wid->childrens[i]->id == wid->id) {
       target_index = i;
       break;
     }
@@ -208,10 +228,29 @@ int remove_children(struct widget *parent_wid, struct widget *wid) {
     parent_wid->childrens[i] = parent_wid->childrens[i + 1];
   }
 
+  parent_wid->childrens_counter--;
+
+  if (parent_wid->childrens_counter == 0) {
+    free(parent_wid->childrens);
+    parent_wid->childrens = NULL;
+  } else {
+    struct widget **new_array = (struct widget **)realloc(
+        parent_wid->childrens,
+        parent_wid->childrens_counter * sizeof(struct widget *));
+    if (new_array != NULL) {
+      parent_wid->childrens = new_array;
+    }
+  }
+
+  wid->parent = NULL;
+
   return wid->id;
 }
 
 void render(struct widget *wid) {
+  if (wid == NULL || wid->content == NULL)
+    return;
+
   for (int i = 0; i < wid->height; i++) {
     for (int j = 0; j < wid->width; j++) {
       int screen_x = wid->x + j;
@@ -237,10 +276,16 @@ void convert_local_coordinates_to_global(int *x, int *y, int wid_x, int wid_y) {
 }
 
 void putchar_in_widget(struct widget *wid, char c, int x, int y) {
-  wid->content[y * wid->width + x] = c;
+  if (wid == NULL || wid->content == NULL)
+    return;
+  if (x >= 0 && x < wid->width && y >= 0 && y < wid->height) {
+    wid->content[y * wid->width + x] = c;
+  }
 }
 
 void putstring_in_widget(struct widget *wid, char *str, int x, int y) {
+  if (wid == NULL || str == NULL)
+    return;
   for (int i = 0; str[i] != '\0'; i++) {
     putchar_in_widget(wid, str[i], x++, y);
   }
@@ -248,7 +293,7 @@ void putstring_in_widget(struct widget *wid, char *str, int x, int y) {
 
 void render_all_widgets() {
   for (int i = 0; i < widgets_counter; i++) {
-    render(&widgets[i]);
+    render(widgets[i]);
   }
 }
 
@@ -265,6 +310,8 @@ void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...) {
 
   if (str_len < 0) {
     write_debug_err("widget.c: str_len < 0");
+    va_end(args);
+    return;
   }
 
   buffer = (char *)malloc(str_len + 1);
@@ -276,6 +323,7 @@ void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...) {
   putstring_in_widget(wid, buffer, x, y);
 
   free(buffer);
+  va_end(args);
 }
 
 void vputstring_in_widgetf(struct widget *wid, int x, int y, char *format,
@@ -289,6 +337,7 @@ void vputstring_in_widgetf(struct widget *wid, int x, int y, char *format,
 
   if (str_len < 0) {
     write_debug_err("widget.c: str_len < 0");
+    return;
   }
 
   buffer = (char *)malloc(str_len + 1);

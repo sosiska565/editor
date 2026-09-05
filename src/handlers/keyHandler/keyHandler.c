@@ -7,16 +7,13 @@
 #include <stdio.h>
 #include <unistd.h>
 
-void init_key_handler() {
+int read_key_nonblock(unsigned char *buff, ssize_t size) {
   int flags = fcntl(0, F_GETFL);
   if (flags == -1) {
     errExitErrnoClear("fcntl");
   }
 
   fcntl(0, F_SETFL, flags | O_NONBLOCK);
-}
-
-int read_key_nonblock(unsigned char *buff, ssize_t size) {
   int numRead;
 
   if ((numRead = read(0, buff, size)) <= 0) {

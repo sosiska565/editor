@@ -4,7 +4,7 @@
 #include "../../widget/widget.h"
 
 struct widget *init_label(char *name, int x, int y, int fg_color, int bg_color);
-void render_label();
-void destroy_label();
+void render_label(struct widget *wid);
+void destroy_label(struct widget *wid);
 
 #endif

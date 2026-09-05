@@ -19,7 +19,7 @@ struct widget {
   char *content;
 
   struct widget *parent;
-  struct widget *childrens;
+  struct widget **childrens;
   int childrens_counter;
 
   int fg_color;
@@ -40,7 +40,8 @@ typedef enum {
   ALIGN_CENTER_RIGHT = ALIGN_RIGHT | ALIGN_Y_CTR
 } alignment;
 
-int create_widget(char *name, struct widget *wid);
+struct widget *create_widget(char *name, int x, int y, int height, int width,
+                             int fg_color, int bg_color);
 int destroy_widget(struct widget *wid);
 void render(struct widget *wid);
 void render_all_widgets();

@@ -57,15 +57,13 @@ int main(int argc, char *argv[]) {
 
   struct widget *display_wid =
       init_display("display", 0, 0, term.height, term.width,
-                   TERMINAL_COLOR_WHITE_FG, TERMINAL_COLOR_BLACK_BG);
+                   TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR);
 
   if (display_wid == NULL)
     errExitFprintf("display_wid is null");
 
   init_signal_handler();
   write_debug_info("Signal handler init");
-
-  init_key_handler();
 
   // start main loop
   write_debug_info("Start main loop");
@@ -78,13 +76,13 @@ int main(int argc, char *argv[]) {
     term.key = read_key_and_parse();
 
     clean_cells_buffer();
-    render_display();
+    render_display(display_wid);
     flush_buffer_to_screen();
 
     usleep(10000);
   }
 
-  destroy_display();
+  destroy_display(display_wid);
 
   return EXIT_SUCCESS;
 }
