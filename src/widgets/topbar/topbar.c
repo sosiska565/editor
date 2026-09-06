@@ -5,6 +5,9 @@
 #include <string.h>
 
 #define BUFFER_LIST_SEPARATOR " | "
+#define CURRENT_BUFFER_MARK "*"
+
+static struct buffer *current_marked_buffer = NULL;
 
 struct widget *init_topbar(char *name, int x, int y, int height, int width,
                            int fg_color, int bg_color) {
@@ -46,6 +49,8 @@ static void refresh_buffer_list_label() {
   for (int i = 0; i < buffers_counter; i++) {
     if (i > 0)
       total_len += strlen(BUFFER_LIST_SEPARATOR);
+    if (buffer_list[i] == current_marked_buffer)
+      total_len += strlen(CURRENT_BUFFER_MARK);
     total_len += strlen(buffer_list[i]->name);
   }
 
@@ -64,9 +69,18 @@ static void refresh_buffer_list_label() {
       putstring_in_widget(label_buffer_list, BUFFER_LIST_SEPARATOR, x, 0);
       x += strlen(BUFFER_LIST_SEPARATOR);
     }
+    if (buffer_list[i] == current_marked_buffer) {
+      putstring_in_widget(label_buffer_list, CURRENT_BUFFER_MARK, x, 0);
+      x += strlen(CURRENT_BUFFER_MARK);
+    }
     putstring_in_widget(label_buffer_list, buffer_list[i]->name, x, 0);
     x += strlen(buffer_list[i]->name);
   }
+}
+
+void set_topbar_current_buffer(struct buffer *buff) {
+  current_marked_buffer = buff;
+  refresh_buffer_list_label();
 }
 
 void add_buffer_to_topbar(struct buffer *buff) {

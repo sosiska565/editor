@@ -6,44 +6,23 @@
 #include "../../terminal/terminal.h"
 #include "../cmdline/cmdline.h"
 #include "../topbar/topbar.h"
-#include <bits/getopt_core.h>
 #include <ctype.h>
 #include <fcntl.h>
-#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 enum { NORMAL_MODE = 1, INSERT_MODE, COMMAND_MODE };
-enum { CMD_OPEN = 1000, CMD_CLOSE };
 
-static char *short_options = "wqo:c:";
 struct buffer *current_buffer = NULL;
+static struct widget *g_editor_wid = NULL;
 
-typedef struct {
-  char **lines;
-  int line_count;
-  int row_offset;
-  int file_x;
-  int file_y;
-} EditorState;
+#define E (*current_buffer)
 
 static int editor_mode = NORMAL_MODE;
-static EditorState E;
 
 void change_mode(int m, struct widget *editor_wid);
-
-static void free_editor_lines() {
-  if (E.lines) {
-    for (int i = 0; i < E.line_count; i++) {
-      free(E.lines[i]);
-    }
-    free(E.lines);
-    E.lines = NULL;
-  }
-  E.line_count = 0;
-}
 
 static void delete_line(int at) {
   if (at < 0 || at >= E.line_count)
@@ -53,14 +32,6 @@ static void delete_line(int at) {
   memmove(&E.lines[at], &E.lines[at + 1],
           sizeof(char *) * (E.line_count - at - 1));
   E.line_count--;
-}
-
-static void append_line(const char *s, size_t len) {
-  E.lines = realloc(E.lines, sizeof(char *) * (E.line_count + 1));
-  E.lines[E.line_count] = malloc(len + 1);
-  memcpy(E.lines[E.line_count], s, len);
-  E.lines[E.line_count][len] = '\0';
-  E.line_count++;
 }
 
 static void insert_line(int at, const char *s, size_t len) {
@@ -74,46 +45,85 @@ static void insert_line(int at, const char *s, size_t len) {
   E.line_count++;
 }
 
-static void load_file_to_lines(int fd) {
-  free_editor_lines();
-  char buf[4096];
+static void load_buffer_content(struct buffer *buf) {
+  if (buf == NULL || buf->lines != NULL)
+    return;
+
+  if (buf->fd < 0) {
+    buf->lines = malloc(sizeof(char *));
+    buf->lines[0] = strdup("");
+    buf->line_count = 1;
+    return;
+  }
+
+  char rbuf[4096];
   ssize_t nread;
   char *line_buf = NULL;
   size_t line_len = 0;
+  char **lines = NULL;
+  int count = 0;
 
-  while ((nread = read(fd, buf, sizeof(buf))) > 0) {
+  while ((nread = read(buf->fd, rbuf, sizeof(rbuf))) > 0) {
     for (ssize_t i = 0; i < nread; i++) {
-      if (buf[i] == '\r')
+      if (rbuf[i] == '\r')
         continue;
-      if (buf[i] == '\n') {
-        append_line(line_buf ? line_buf : "", line_len);
+      if (rbuf[i] == '\n') {
+        lines = realloc(lines, sizeof(char *) * (count + 1));
+        lines[count] = malloc(line_len + 1);
+        memcpy(lines[count], line_buf ? line_buf : "", line_len);
+        lines[count][line_len] = '\0';
+        count++;
         free(line_buf);
         line_buf = NULL;
         line_len = 0;
       } else {
         line_buf = realloc(line_buf, line_len + 1);
-        line_buf[line_len++] = buf[i];
+        line_buf[line_len++] = rbuf[i];
       }
     }
   }
-  if (line_buf != NULL || E.line_count == 0) {
-    append_line(line_buf ? line_buf : "", line_len);
+  if (line_buf != NULL || count == 0) {
+    lines = realloc(lines, sizeof(char *) * (count + 1));
+    lines[count] = malloc(line_len + 1);
+    memcpy(lines[count], line_buf ? line_buf : "", line_len);
+    lines[count][line_len] = '\0';
+    count++;
     free(line_buf);
   }
+
+  buf->lines = lines;
+  buf->line_count = count;
+
+  close(buf->fd);
+  buf->fd = -1;
 }
 
-static int save_file(const char *filename) {
-  int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-  if (fd == -1)
-    return -1;
+static void save_buffer_to_disk(struct buffer *buf) {
+  if (buf == NULL || buf->lines == NULL)
+    return;
 
-  for (int i = 0; i < E.line_count; i++) {
-    write(fd, E.lines[i], strlen(E.lines[i]));
+  int fd = open(buf->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  if (fd == -1)
+    return;
+
+  for (int i = 0; i < buf->line_count; i++) {
+    write(fd, buf->lines[i], strlen(buf->lines[i]));
     write(fd, "\n", 1);
   }
 
   close(fd);
-  return 0;
+}
+
+static void save_current_buffer(void) {
+  if (current_buffer != NULL) {
+    save_buffer_to_disk(current_buffer);
+  }
+}
+
+static void save_all_buffers(void) {
+  for (int i = 0; i < buffers_counter; i++) {
+    save_buffer_to_disk(buffer_list[i]);
+  }
 }
 
 static void scroll_editor(struct widget *wid) {
@@ -149,6 +159,9 @@ struct widget *init_editor(char *name, int x, int y, int height, int width,
   if (wid == NULL)
     return NULL;
 
+  current_buffer = buffer_list[0];
+  g_editor_wid = wid;
+
   struct widget *topbar_wid = find_widget_by_name("_display_topbar");
   if (topbar_wid != NULL) {
     for (int i = 0; i < buffers_counter; i++) {
@@ -156,20 +169,109 @@ struct widget *init_editor(char *name, int x, int y, int height, int width,
                        buffer_list[i]->fd);
       add_buffer_to_topbar(buffer_list[i]);
     }
+    set_topbar_current_buffer(current_buffer);
   }
 
-  current_buffer = buffer_list[0];
-
-  load_file_to_lines(buffer_list[0]->fd);
-  close(buffer_list[0]->fd);
-
-  E.row_offset = 0;
-  E.file_x = 0;
-  E.file_y = 0;
+  load_buffer_content(current_buffer);
 
   refresh_editor_widget(wid);
 
   return wid;
+}
+
+static void switch_to_buffer(struct buffer *buf, struct widget *wid) {
+  if (buf == NULL || buf == current_buffer)
+    return;
+
+  load_buffer_content(buf);
+  current_buffer = buf;
+  set_topbar_current_buffer(current_buffer);
+
+  if (wid != NULL) {
+    scroll_editor(wid);
+    refresh_editor_widget(wid);
+  }
+}
+
+static void switch_to_adjacent_buffer(int direction, struct widget *wid) {
+  if (buffers_counter <= 1)
+    return;
+
+  int idx = 0;
+  for (int i = 0; i < buffers_counter; i++) {
+    if (buffer_list[i] == current_buffer) {
+      idx = i;
+      break;
+    }
+  }
+
+  idx = (idx + direction + buffers_counter) % buffers_counter;
+  switch_to_buffer(buffer_list[idx], wid);
+}
+
+static void open_and_switch(const char *filename) {
+  struct buffer *filebuf = open_file((char *)filename);
+
+  if (filebuf == NULL) {
+    filebuf = find_buffer_by_name((char *)filename);
+  } else {
+    write_debug_info("Open file name: %s, fd: %d", filebuf->name, filebuf->fd);
+    add_buffer_to_topbar(filebuf);
+  }
+
+  switch_to_buffer(filebuf, g_editor_wid);
+}
+
+static void close_buffer_command(const char *name) {
+  struct buffer *target =
+      (name != NULL) ? find_buffer_by_name((char *)name) : current_buffer;
+
+  if (target == NULL || buffers_counter <= 1)
+    return;
+
+  int idx = -1;
+  for (int i = 0; i < buffers_counter; i++) {
+    if (buffer_list[i] == target) {
+      idx = i;
+      break;
+    }
+  }
+
+  if (idx < 0)
+    return;
+
+  int was_current = (target == current_buffer);
+  struct buffer *fallback = (idx == 0) ? buffer_list[1] : buffer_list[idx - 1];
+
+  if (was_current) {
+    current_buffer = fallback;
+    load_buffer_content(current_buffer);
+    set_topbar_current_buffer(current_buffer);
+  }
+
+  write_debug_info("fd: %d", target->fd);
+
+  if (target->fd >= 0)
+    close_file(target);
+  remove_buffer_from_topbar(target);
+
+  if (was_current && g_editor_wid != NULL) {
+    scroll_editor(g_editor_wid);
+    refresh_editor_widget(g_editor_wid);
+  }
+}
+
+static int is_flag_cluster(const char *s) {
+  if (s == NULL || s[0] == '\0')
+    return 0;
+
+  for (int i = 0; s[i] != '\0'; i++) {
+    if (s[i] != 'w' && s[i] != 'q' && s[i] != 'a') {
+      return 0;
+    }
+  }
+
+  return 1;
 }
 
 static void execute_command(const char *cmd) {
@@ -185,104 +287,50 @@ static void execute_command(const char *cmd) {
   if (cmd_copy == NULL)
     return;
 
-  char *fake_argv[16];
-  int fake_argc = 0;
-
-  fake_argv[fake_argc++] = "editor_cmd";
+  char *tokens[16];
+  int token_count = 0;
 
   char *token = strtok(cmd_copy, " ");
-  while (token != NULL && fake_argc < 15) {
-    if (token[0] != '-') {
-      int token_len = strlen(token);
-      char *formatted = malloc(token_len + 2);
-      if (formatted != NULL) {
-        formatted[0] = '-';
-        strcpy(formatted + 1, token);
-        fake_argv[fake_argc++] = formatted;
-      }
-    } else {
-      fake_argv[fake_argc++] = strdup(token);
-    }
+  while (token != NULL && token_count < 16) {
+    tokens[token_count++] = token;
     token = strtok(NULL, " ");
   }
-  fake_argv[fake_argc] = NULL;
 
-  optind = 1;
-  opterr = 0;
-  optarg = NULL;
-
-  int opt;
-  int flag_w = 0;
-  int flag_q = 0;
-  int unknown_flag = 0;
-  int flag_file_open = 0;
-  int flag_file_close = 0;
-  char *file_to_open = NULL;
-
-  struct option long_options[] = {{"open", required_argument, NULL, CMD_OPEN},
-                                  {"close", required_argument, NULL, CMD_CLOSE},
-                                  {NULL, 0, NULL, 0}};
-
-  while ((opt = getopt_long(fake_argc, fake_argv, short_options, long_options,
-                            NULL)) != -1) {
-    switch (opt) {
-    case 'w':
-      flag_w = 1;
-      break;
-    case 'q':
-      flag_q = 1;
-      break;
-    case 'o':
-    case CMD_OPEN:
-      flag_file_open = 1;
-      if (optarg != NULL) {
-        file_to_open = (optarg[0] == '-') ? (optarg + 1) : optarg;
-      }
-      break;
-    case 'c':
-    case CMD_CLOSE:
-      flag_file_close = 1;
-      if (optarg != NULL) {
-        file_to_open = (optarg[0] == '-') ? (optarg + 1) : optarg;
-      }
-      break;
-    case '?':
-      unknown_flag = 1;
-      break;
-    }
-  }
-
-  if (unknown_flag)
+  if (token_count == 0) {
+    free(cmd_copy);
     return;
+  }
 
-  if (flag_w) {
-    if (buffers_counter > 0) {
-      save_file(buffer_list[0]->name);
+  char *name = tokens[0];
+  char *arg = (token_count > 1) ? tokens[1] : NULL;
+  int quit = 0;
+
+  if (strcmp(name, "o") == 0 || strcmp(name, "open") == 0) {
+    if (arg != NULL) {
+      open_and_switch(arg);
+    }
+  } else if (strcmp(name, "c") == 0 || strcmp(name, "close") == 0) {
+    close_buffer_command(arg);
+  } else if (is_flag_cluster(name)) {
+    int has_w = strchr(name, 'w') != NULL;
+    int has_q = strchr(name, 'q') != NULL;
+    int has_a = strchr(name, 'a') != NULL;
+
+    if (has_w) {
+      if (has_a) {
+        save_all_buffers();
+      } else {
+        save_current_buffer();
+      }
+    }
+    if (has_q) {
+      quit = 1;
     }
   }
 
-  if (flag_file_open) {
-    struct buffer *filebuf = open_file(file_to_open);
-    write_debug_info("Open file name: %s, fd: %d", filebuf->name, filebuf->fd);
-    add_buffer_to_topbar(filebuf);
-  }
-
-  if (flag_file_close) {
-    struct buffer *filebuf = find_buffer_by_name(file_to_open);
-    if (filebuf == NULL) {
-      return;
-    }
-
-    close_file(filebuf);
-    remove_buffer_from_topbar(filebuf);
-  }
-
-  for (int i = 1; i < fake_argc; i++) {
-    free(fake_argv[i]);
-  }
   free(cmd_copy);
 
-  if (flag_q) {
+  if (quit) {
     exit_terminal();
   }
 }
@@ -420,9 +468,11 @@ void key_events_handler(struct widget *wid) {
     return;
   }
 
-  if (term.key == 'H') {
+  if (term.key == 'H' && editor_mode != INSERT_MODE) {
+    switch_to_adjacent_buffer(-1, wid);
   }
-  if (term.key == 'L') {
+  if (term.key == 'L' && editor_mode != INSERT_MODE) {
+    switch_to_adjacent_buffer(1, wid);
   }
 
   if (term.key == KEY_ESCAPE) {
@@ -506,6 +556,8 @@ void render_editor(struct widget *wid) {
 void destroy_editor(struct widget *wid) {
   if (wid == NULL)
     return;
-  free_editor_lines();
+  for (int i = 0; i < buffers_counter; i++) {
+    free_buffer_lines(buffer_list[i]);
+  }
   destroy_widget(wid);
 }

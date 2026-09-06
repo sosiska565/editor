@@ -21,7 +21,12 @@ struct buffer *open_file(char *filename) {
 }
 
 void close_file(struct buffer *buff) {
+  if (buff == NULL)
+    return;
+
   if (close(buff->fd) == -1) {
     errExitErrnoClear("close");
   }
+
+  buff->fd = -1;
 }

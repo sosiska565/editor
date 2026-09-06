@@ -35,6 +35,11 @@ struct buffer *add_buffer(struct buffer *buff) {
 
   buffer_list[buffers_counter - 1]->name = strdup(buff->name);
   buffer_list[buffers_counter - 1]->fd = buff->fd;
+  buffer_list[buffers_counter - 1]->lines = NULL;
+  buffer_list[buffers_counter - 1]->line_count = 0;
+  buffer_list[buffers_counter - 1]->row_offset = 0;
+  buffer_list[buffers_counter - 1]->file_x = 0;
+  buffer_list[buffers_counter - 1]->file_y = 0;
 
   return buffer_list[buffers_counter - 1];
 }
@@ -47,7 +52,9 @@ int remove_buffer(struct buffer *buff) {
     if (strcmp(buffer_list[i]->name, buff->name) == 0) {
 
       free(buffer_list[i]->name);
-      close(buffer_list[i]->fd);
+      if (buffer_list[i]->fd >= 0) {
+        close(buffer_list[i]->fd);
+      }
       free(buffer_list[i]);
 
       for (int j = i; j < buffers_counter - 1; j++) {
@@ -94,4 +101,17 @@ struct buffer *find_buffer_by_name(char *name) {
     }
   }
   return NULL;
+}
+
+void free_buffer_lines(struct buffer *buff) {
+  if (buff == NULL)
+    return;
+
+  if (buff->lines != NULL) {
+    for (int i = 0; i < buff->line_count; i++) {
+      free(buff->lines[i]);
+    }
+    free(buff->lines);
+  }
+  buff->line_count = 0;
 }

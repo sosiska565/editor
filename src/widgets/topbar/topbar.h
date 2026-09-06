@@ -12,5 +12,6 @@ void destroy_topbar(struct widget *bar);
 void render_topbar(struct widget *bar);
 void add_buffer_to_topbar(struct buffer *buff);
 void remove_buffer_from_topbar(struct buffer *buff);
+void set_topbar_current_buffer(struct buffer *buff);
 
 #endif
