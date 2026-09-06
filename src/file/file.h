@@ -1,7 +1,7 @@
 #ifndef FILE_H
 #define FILE_H
 
-int open_file(char *filename);
-void close_file(int fd);
+struct buffer *open_file(char *filename);
+void close_file(struct buffer *buff);
 
 #endif

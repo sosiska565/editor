@@ -10,7 +10,8 @@ enum {
   KEY_ARROW_LEFT,
   KEY_DELETE,
   KEY_BACKSPACE,
-  KEY_ESCAPE
+  KEY_ESCAPE,
+  KEY_SHIFT
 };
 
 int read_key_nonblock(unsigned char *buff, ssize_t size);

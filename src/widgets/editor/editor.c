@@ -2,21 +2,24 @@
 #include "../../buffer/buffer.h"
 #include "../../debug/debug.h"
 #include "../../file/file.h"
-#include "../../handlers/errorHandlers/errorHandlers.h"
 #include "../../handlers/keyHandler/keyHandler.h"
 #include "../../terminal/terminal.h"
 #include "../cmdline/cmdline.h"
+#include "../topbar/topbar.h"
 #include <bits/getopt_core.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 enum { NORMAL_MODE = 1, INSERT_MODE, COMMAND_MODE };
+enum { CMD_OPEN = 1000, CMD_CLOSE };
 
-static char *short_options = "wq";
+static char *short_options = "wqo:c:";
+struct buffer *current_buffer = NULL;
 
 typedef struct {
   char **lines;
@@ -146,20 +149,19 @@ struct widget *init_editor(char *name, int x, int y, int height, int width,
   if (wid == NULL)
     return NULL;
 
-  char **buflist = get_buffer_list();
-  if (buflist == NULL)
-    errExitFprintf("buffer list is NULL");
-
-  int fd = open_file(buflist[0]);
-
   struct widget *topbar_wid = find_widget_by_name("_display_topbar");
-  if (topbar_wid == NULL)
-    errExitFprintf("topbar widget is NULL");
+  if (topbar_wid != NULL) {
+    for (int i = 0; i < buffers_counter; i++) {
+      write_debug_info("Name: %s, fd: %d", buffer_list[i]->name,
+                       buffer_list[i]->fd);
+      add_buffer_to_topbar(buffer_list[i]);
+    }
+  }
 
-  putstring_in_widgetf_aligment(topbar_wid, ALIGN_CENTER, buflist[0]);
+  current_buffer = buffer_list[0];
 
-  load_file_to_lines(fd);
-  close(fd);
+  load_file_to_lines(buffer_list[0]->fd);
+  close(buffer_list[0]->fd);
 
   E.row_offset = 0;
   E.file_x = 0;
@@ -179,26 +181,50 @@ static void execute_command(const char *cmd) {
     return;
   }
 
-  int len = strlen(cmd);
-  char *formatted_cmd = malloc(len + 2);
-  if (formatted_cmd == NULL)
+  char *cmd_copy = strdup(cmd);
+  if (cmd_copy == NULL)
     return;
 
-  formatted_cmd[0] = '-';
-  strcpy(formatted_cmd + 1, cmd);
+  char *fake_argv[16];
+  int fake_argc = 0;
 
-  char *fake_argv[] = {"editor_cmd", formatted_cmd, NULL};
-  int fake_argc = 2;
+  fake_argv[fake_argc++] = "editor_cmd";
+
+  char *token = strtok(cmd_copy, " ");
+  while (token != NULL && fake_argc < 15) {
+    if (token[0] != '-') {
+      int token_len = strlen(token);
+      char *formatted = malloc(token_len + 2);
+      if (formatted != NULL) {
+        formatted[0] = '-';
+        strcpy(formatted + 1, token);
+        fake_argv[fake_argc++] = formatted;
+      }
+    } else {
+      fake_argv[fake_argc++] = strdup(token);
+    }
+    token = strtok(NULL, " ");
+  }
+  fake_argv[fake_argc] = NULL;
 
   optind = 1;
   opterr = 0;
+  optarg = NULL;
 
   int opt;
   int flag_w = 0;
   int flag_q = 0;
   int unknown_flag = 0;
+  int flag_file_open = 0;
+  int flag_file_close = 0;
+  char *file_to_open = NULL;
 
-  while ((opt = getopt(fake_argc, fake_argv, short_options)) != -1) {
+  struct option long_options[] = {{"open", required_argument, NULL, CMD_OPEN},
+                                  {"close", required_argument, NULL, CMD_CLOSE},
+                                  {NULL, 0, NULL, 0}};
+
+  while ((opt = getopt_long(fake_argc, fake_argv, short_options, long_options,
+                            NULL)) != -1) {
     switch (opt) {
     case 'w':
       flag_w = 1;
@@ -206,22 +232,56 @@ static void execute_command(const char *cmd) {
     case 'q':
       flag_q = 1;
       break;
+    case 'o':
+    case CMD_OPEN:
+      flag_file_open = 1;
+      if (optarg != NULL) {
+        file_to_open = (optarg[0] == '-') ? (optarg + 1) : optarg;
+      }
+      break;
+    case 'c':
+    case CMD_CLOSE:
+      flag_file_close = 1;
+      if (optarg != NULL) {
+        file_to_open = (optarg[0] == '-') ? (optarg + 1) : optarg;
+      }
+      break;
     case '?':
       unknown_flag = 1;
       break;
     }
   }
 
-  free(formatted_cmd);
-
   if (unknown_flag)
     return;
+
   if (flag_w) {
-    char **buflist = get_buffer_list();
-    if (buflist != NULL && buflist[0] != NULL) {
-      save_file(buflist[0]); // TODO: make save more files
+    if (buffers_counter > 0) {
+      save_file(buffer_list[0]->name);
     }
   }
+
+  if (flag_file_open) {
+    struct buffer *filebuf = open_file(file_to_open);
+    write_debug_info("Open file name: %s, fd: %d", filebuf->name, filebuf->fd);
+    add_buffer_to_topbar(filebuf);
+  }
+
+  if (flag_file_close) {
+    struct buffer *filebuf = find_buffer_by_name(file_to_open);
+    if (filebuf == NULL) {
+      return;
+    }
+
+    close_file(filebuf);
+    remove_buffer_from_topbar(filebuf);
+  }
+
+  for (int i = 1; i < fake_argc; i++) {
+    free(fake_argv[i]);
+  }
+  free(cmd_copy);
+
   if (flag_q) {
     exit_terminal();
   }
@@ -358,6 +418,11 @@ void key_events_handler(struct widget *wid) {
       exit_command_mode(wid);
     }
     return;
+  }
+
+  if (term.key == 'H') {
+  }
+  if (term.key == 'L') {
   }
 
   if (term.key == KEY_ESCAPE) {

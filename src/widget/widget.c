@@ -365,7 +365,7 @@ void get_aligment_coordinates(int *x, int *y, int width, int height,
   if (flags & ALIGN_Y_CTR) {
     (*y) = (height - content_height) / 2;
   } else if (flags & ALIGN_BOTTOM) {
-    (*y) = height - content_height;
+    (*y) = height - content_height - 1;
   } else {
     (*y) = 0;
   }
@@ -396,4 +396,38 @@ void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
   vputstring_in_widgetf(wid, target_x, target_y, format, args);
 
   va_end(args);
+}
+
+int change_size_widget(struct widget *wid, int new_height, int new_width) {
+  if (wid == NULL || new_height <= 0 || new_width <= 0)
+    return -1;
+
+  char *new_content = (char *)malloc((size_t)new_height * new_width);
+  if (new_content == NULL)
+    return -1;
+
+  memset(new_content, ' ', (size_t)new_height * new_width);
+
+  if (wid->content != NULL) {
+    int copy_height = wid->height < new_height ? wid->height : new_height;
+    int copy_width = wid->width < new_width ? wid->width : new_width;
+
+    for (int y = 0; y < copy_height; y++) {
+      memcpy(&new_content[y * new_width], &wid->content[y * wid->width],
+             (size_t)copy_width);
+    }
+
+    free(wid->content);
+  }
+
+  wid->content = new_content;
+  wid->height = new_height;
+  wid->width = new_width;
+
+  wid->bottom = wid->y + new_height;
+  wid->right = wid->x + new_width;
+  wid->center_x = new_width / 2;
+  wid->center_y = new_height / 2;
+
+  return 0;
 }

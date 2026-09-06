@@ -1,4 +1,3 @@
-#include "buffer/buffer.h"
 #include "debug/debug.h"
 #include "handlers/errorHandlers/errorHandlers.h"
 #include "handlers/keyHandler/keyHandler.h"
@@ -8,6 +7,7 @@
 #include "widget/widget.h"
 #include "widgets/display/display.h"
 
+#include "file/file.h"
 #include <fcntl.h>
 #include <getopt.h>
 #include <stdlib.h>
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
   write_debug_info("Terminal init %dx%d", term.width, term.height);
 
-  add_buffer(argv[argc - 1]);
+  open_file(argv[argc - 1]);
 
   struct widget *display_wid =
       init_display("display", 0, 0, term.height, term.width,

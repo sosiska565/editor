@@ -55,6 +55,8 @@ void putstring_in_widgetf(struct widget *wid, int x, int y, char *format, ...);
 void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
                                    ...);
 
+int change_size_widget(struct widget *wid, int height, int width);
+
 struct widget *find_widget_by_name(char *name);
 
 #endif

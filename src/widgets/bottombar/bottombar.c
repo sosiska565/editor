@@ -14,8 +14,8 @@ struct widget *init_bottombar(char *name, int x, int y, int height, int width,
   struct widget *clock_wid =
       init_clock("clock", bar->width - 8, 0, TERMINAL_COLOR_BLACK_FG,
                  TERMINAL_COLOR_WHITE_BG);
-  struct widget *mode_wid = init_label("mode", 0, 0, TERMINAL_COLOR_BLACK_FG,
-                                       TERMINAL_COLOR_WHITE_BG);
+  struct widget *mode_wid = init_label(
+      "mode", 0, 0, 1, 20, TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
 
   if (clock_wid == NULL || mode_wid == NULL) {
     destroy_widget(bar);

@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#define CMDLINE_PROMPT "cmd> "
+#define CMDLINE_PROMPT "> "
 #define CMDLINE_PROMPT_X 2
 #define CMDLINE_PROMPT_Y 1
 #define CMDLINE_MAX_LEN 44
@@ -23,6 +23,8 @@ static void redraw_cmdline(struct widget *wid) {
   putstring_in_widget(wid, cmd_buf,
                       CMDLINE_PROMPT_X + (int)strlen(CMDLINE_PROMPT),
                       CMDLINE_PROMPT_Y);
+
+  putstring_in_widgetf_aligment(wid, ALIGN_X_CTR | ALIGN_TOP, "CmdLine");
 
   term.cursor_x =
       wid->x + CMDLINE_PROMPT_X + (int)strlen(CMDLINE_PROMPT) + cmd_len;
@@ -71,6 +73,8 @@ cmdline_status cmdline_process_key(struct widget *wid, int key) {
     if (cmd_len > 0) {
       cmd_len--;
       cmd_buf[cmd_len] = '\0';
+    } else if (cmd_len <= 0) {
+      return CMDLINE_CANCELLED;
     }
     redraw_cmdline(wid);
     return CMDLINE_ACTIVE;
