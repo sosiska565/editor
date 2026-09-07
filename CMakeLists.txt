@@ -26,4 +26,5 @@ add_executable(
   src/widgets/label/label.c
   src/buffer/buffer.c
   src/widgets/cmdline/cmdline.c
+  src/widgets/testwidget/testwidget.c
 )

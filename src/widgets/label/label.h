@@ -3,9 +3,6 @@
 
 #include "../../widget/widget.h"
 
-struct widget *init_label(char *name, int x, int y, int height, int width,
-                          int fg_color, int bg_color);
-void render_label(struct widget *wid);
-void destroy_label(struct widget *wid);
+struct widget *init_label(struct widget_dto *wid_dto);
 
 #endif

@@ -24,6 +24,19 @@ struct widget {
 
   int fg_color;
   int bg_color;
+
+  void (*render)(struct widget *wid);
+  void (*destroy)(struct widget *wid);
+};
+
+struct widget_dto {
+  char *name;
+  int x;
+  int y;
+  int height;
+  int width;
+  int fg_color;
+  int bg_color;
 };
 
 typedef enum {

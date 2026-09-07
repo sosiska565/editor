@@ -55,9 +55,9 @@ int main(int argc, char *argv[]) {
 
   open_file(argv[argc - 1]);
 
-  struct widget *display_wid =
-      init_display("display", 0, 0, term.height, term.width,
-                   TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR);
+  struct widget *display_wid = init_display(
+      &(struct widget_dto){"display", 0, 0, term.height, term.width,
+                           TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR});
 
   if (display_wid == NULL)
     errExitFprintf("display_wid is null");
@@ -76,13 +76,13 @@ int main(int argc, char *argv[]) {
     term.key = read_key_and_parse();
 
     clean_cells_buffer();
-    render_display(display_wid);
+    display_wid->render(display_wid);
     flush_buffer_to_screen();
 
     usleep(10000);
   }
 
-  destroy_display(display_wid);
+  display_wid->destroy(display_wid);
 
   return EXIT_SUCCESS;
 }

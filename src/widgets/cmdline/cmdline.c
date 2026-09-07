@@ -17,6 +17,32 @@ static int saved_cursor_y = -1;
 
 static cmdline_submit_cb submit_cb = NULL;
 
+static void render_cmdline(struct widget *wid) {
+  if (wid == NULL)
+    return;
+  render(wid);
+}
+
+static void destroy_cmdline(struct widget *wid) {
+  if (wid == NULL)
+    return;
+
+  cmd_len = 0;
+  cmd_buf[0] = '\0';
+  submit_cb = NULL;
+
+  if (saved_cursor_x != -1 && saved_cursor_y != -1) {
+    term.cursor_x = saved_cursor_x;
+    term.cursor_y = saved_cursor_y;
+    move_cursor_terminal(term.cursor_x, term.cursor_y);
+
+    saved_cursor_x = -1;
+    saved_cursor_y = -1;
+  }
+
+  destroy_widget(wid);
+}
+
 static void redraw_cmdline(struct widget *wid) {
   memset(wid->content, ' ', wid->width * wid->height);
   putstring_in_widget(wid, CMDLINE_PROMPT, CMDLINE_PROMPT_X, CMDLINE_PROMPT_Y);
@@ -32,11 +58,15 @@ static void redraw_cmdline(struct widget *wid) {
   move_cursor_terminal(term.cursor_x, term.cursor_y);
 }
 
-struct widget *init_cmdline(char *name, int x, int y, int fg_color,
-                            int bg_color, cmdline_submit_cb on_submit) {
-  struct widget *wid = create_widget(name, x, y, 3, 50, fg_color, bg_color);
+struct widget *init_cmdline(struct widget_dto *wid_dto,
+                            cmdline_submit_cb on_submit) {
+  struct widget *wid = create_widget(wid_dto->name, wid_dto->x, wid_dto->y, 3,
+                                     50, wid_dto->fg_color, wid_dto->bg_color);
   if (wid == NULL)
     return NULL;
+
+  wid->render = render_cmdline;
+  wid->destroy = destroy_cmdline;
 
   cmd_len = 0;
   cmd_buf[0] = '\0';
@@ -87,30 +117,4 @@ cmdline_status cmdline_process_key(struct widget *wid, int key) {
   }
 
   return CMDLINE_ACTIVE;
-}
-
-void render_cmdline(struct widget *wid) {
-  if (wid == NULL)
-    return;
-  render(wid);
-}
-
-void destroy_cmdline(struct widget *wid) {
-  if (wid == NULL)
-    return;
-
-  cmd_len = 0;
-  cmd_buf[0] = '\0';
-  submit_cb = NULL;
-
-  if (saved_cursor_x != -1 && saved_cursor_y != -1) {
-    term.cursor_x = saved_cursor_x;
-    term.cursor_y = saved_cursor_y;
-    move_cursor_terminal(term.cursor_x, term.cursor_y);
-
-    saved_cursor_x = -1;
-    saved_cursor_y = -1;
-  }
-
-  destroy_widget(wid);
 }

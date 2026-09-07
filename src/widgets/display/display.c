@@ -2,40 +2,11 @@
 #include "../../terminal/terminal.h"
 #include "../bottombar/bottombar.h"
 #include "../editor/editor.h"
+#include "../testwidget/testwidget.h"
 #include "../topbar/topbar.h"
 #include <unistd.h>
 
-struct widget *init_display(char *name, int x, int y, int height, int width,
-                            int fg_color, int bg_color) {
-  struct widget *disp =
-      create_widget(name, x, y, height, width, fg_color, bg_color);
-  if (disp == NULL)
-    return NULL;
-
-  struct widget *bottombar_wid =
-      init_bottombar("bottombar", disp->left, disp->height - 1, 1, disp->width,
-                     TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
-  add_children(disp, bottombar_wid);
-
-  struct widget *topbar_wid =
-      init_topbar("topbar", disp->left, disp->top, 1, disp->width,
-                  TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG);
-  add_children(disp, topbar_wid);
-
-  struct widget *editor_wid =
-      init_editor("editor", 0, disp->y + 1, disp->height - 2, disp->width,
-                  TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR);
-  add_children(disp, editor_wid);
-
-  if (bottombar_wid == NULL || topbar_wid == NULL || editor_wid == NULL) {
-    destroy_widget(disp);
-    return NULL;
-  }
-
-  return disp;
-}
-
-void render_display(struct widget *disp) {
+static void render_display(struct widget *disp) {
   if (disp == NULL)
     return;
 
@@ -45,12 +16,13 @@ void render_display(struct widget *disp) {
 
   render(disp);
 
-  render_bottombar(bottombar_wid);
-  render_topbar(topbar_wid);
-  render_editor(editor_wid);
+  bottombar_wid->render(bottombar_wid);
+  bottombar_wid->render(bottombar_wid);
+  topbar_wid->render(topbar_wid);
+  editor_wid->render(editor_wid);
 }
 
-void destroy_display(struct widget *disp) {
+static void destroy_display(struct widget *disp) {
   if (disp == NULL)
     return;
 
@@ -58,9 +30,46 @@ void destroy_display(struct widget *disp) {
   struct widget *topbar_wid = find_widget_by_name("_display_topbar");
   struct widget *editor_wid = find_widget_by_name("_display_editor");
 
-  destroy_bottombar(bottombar_wid);
-  destroy_topbar(topbar_wid);
-  destroy_editor(editor_wid);
+  bottombar_wid->destroy(bottombar_wid);
+  topbar_wid->destroy(topbar_wid);
+  editor_wid->destroy(editor_wid);
 
   destroy_widget(disp);
+}
+
+struct widget *init_display(struct widget_dto *wid_dto) {
+  struct widget *disp =
+      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, wid_dto->height,
+                    wid_dto->width, wid_dto->fg_color, wid_dto->bg_color);
+  if (disp == NULL)
+    return NULL;
+
+  disp->render = render_display;
+  disp->destroy = destroy_display;
+
+  struct widget *bottombar_wid = init_bottombar(&(struct widget_dto){
+      "bottombar", disp->left, disp->height - 1, 1, disp->width,
+      TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG});
+  add_children(disp, bottombar_wid);
+
+  struct widget *topbar_wid = init_topbar(
+      &(struct widget_dto){"topbar", disp->left, disp->top, 1, disp->width,
+                           TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG});
+  add_children(disp, topbar_wid);
+
+  struct widget *editor_wid = init_editor(&(struct widget_dto){
+      "editor", 0, disp->y + 1, disp->height - 2, disp->width,
+      TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR});
+  add_children(disp, editor_wid);
+
+  struct widget *test_wid = init_testwidget(
+      &(struct widget_dto){"Penis", 10, 10, 20, 20, TERMINAL_COLOR_WHITE_FG,
+                           TERMINAL_COLOR_BLACK_BG});
+
+  if (bottombar_wid == NULL || topbar_wid == NULL || editor_wid == NULL) {
+    destroy_widget(disp);
+    return NULL;
+  }
+
+  return disp;
 }

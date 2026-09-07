@@ -2,19 +2,7 @@
 #include <time.h>
 #include <unistd.h>
 
-struct widget *init_clock(char *name, int x, int y, int fg_color,
-                          int bg_color) {
-  struct widget *clock_wid =
-      create_widget(name, x, y, 1, 8, fg_color, bg_color);
-
-  if (clock_wid == NULL) {
-    return NULL;
-  }
-
-  return clock_wid;
-}
-
-void render_clock(struct widget *wid) {
+static void render_clock(struct widget *wid) {
   if (wid == NULL)
     return;
 
@@ -33,9 +21,24 @@ void render_clock(struct widget *wid) {
   render(wid);
 }
 
-void destroy_clock(struct widget *wid) {
+static void destroy_clock(struct widget *wid) {
   if (wid == NULL)
     return;
 
   destroy_widget(wid);
+}
+
+struct widget *init_clock(struct widget_dto *wid_dto) {
+  struct widget *clock_wid =
+      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, 1, 8,
+                    wid_dto->fg_color, wid_dto->bg_color);
+
+  if (clock_wid == NULL) {
+    return NULL;
+  }
+
+  clock_wid->render = render_clock;
+  clock_wid->destroy = destroy_clock;
+
+  return clock_wid;
 }

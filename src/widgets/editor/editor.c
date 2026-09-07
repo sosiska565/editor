@@ -24,6 +24,9 @@ static int editor_mode = NORMAL_MODE;
 
 void change_mode(int m, struct widget *editor_wid);
 
+static void render_editor(struct widget *wid);
+static void destroy_editor(struct widget *wid);
+
 static void delete_line(int at) {
   if (at < 0 || at >= E.line_count)
     return;
@@ -152,12 +155,15 @@ static void refresh_editor_widget(struct widget *wid) {
   }
 }
 
-struct widget *init_editor(char *name, int x, int y, int height, int width,
-                           int fg_color, int bg_color) {
+struct widget *init_editor(struct widget_dto *wid_dto) {
   struct widget *wid =
-      create_widget(name, x, y, height, width, fg_color, bg_color);
+      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, wid_dto->height,
+                    wid_dto->width, wid_dto->fg_color, wid_dto->bg_color);
   if (wid == NULL)
     return NULL;
+
+  wid->render = render_editor;
+  wid->destroy = destroy_editor;
 
   current_buffer = buffer_list[0];
   g_editor_wid = wid;
@@ -343,8 +349,9 @@ static void open_cmdline(struct widget *editor_wid) {
     return;
 
   struct widget *cmd_line = init_cmdline(
-      "cmdline", (editor_wid->width / 2) - 25, 2, TERMINAL_COLOR_BLACK_FG,
-      TERMINAL_COLOR_WHITE_BG, execute_command);
+      &(struct widget_dto){"cmdline", (editor_wid->width / 2) - 25, 2, 0, 0,
+                           TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG},
+      execute_command);
 
   if (cmd_line == NULL) {
     write_debug_err("editor: failed to open cmdline");
@@ -359,7 +366,7 @@ static void exit_command_mode(struct widget *editor_wid) {
 
   if (cmd_line != NULL && editor_wid != NULL) {
     remove_children(editor_wid, cmd_line);
-    destroy_cmdline(cmd_line);
+    cmd_line->destroy(cmd_line);
   }
 
   change_mode(NORMAL_MODE, editor_wid);
@@ -542,7 +549,7 @@ void key_events_handler(struct widget *wid) {
   move_cursor_terminal(term.cursor_x, term.cursor_y);
 }
 
-void render_editor(struct widget *wid) {
+static void render_editor(struct widget *wid) {
   if (wid == NULL)
     return;
   key_events_handler(wid);
@@ -550,10 +557,10 @@ void render_editor(struct widget *wid) {
 
   struct widget *cmd_line = find_widget_by_name("_display_editor_cmdline");
   if (cmd_line != NULL)
-    render_cmdline(cmd_line);
+    cmd_line->render(cmd_line);
 }
 
-void destroy_editor(struct widget *wid) {
+static void destroy_editor(struct widget *wid) {
   if (wid == NULL)
     return;
   for (int i = 0; i < buffers_counter; i++) {

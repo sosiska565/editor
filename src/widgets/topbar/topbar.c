@@ -9,15 +9,42 @@
 
 static struct buffer *current_marked_buffer = NULL;
 
-struct widget *init_topbar(char *name, int x, int y, int height, int width,
-                           int fg_color, int bg_color) {
+static void render_topbar(struct widget *bar) {
+  if (bar == NULL)
+    return;
+
+  struct widget *label_buffer_list =
+      find_widget_by_name("_topbar_label_buffer_list");
+
+  render(bar);
+  label_buffer_list->render(label_buffer_list);
+}
+
+static void destroy_topbar(struct widget *bar) {
+  if (bar == NULL)
+    return;
+
+  struct widget *label_buffer_list =
+      find_widget_by_name("_topbar_label_buffer_list");
+
+  while (bar->childrens_counter > 0) {
+    struct widget *child = bar->childrens[0];
+    remove_children(bar, child);
+  }
+
+  destroy_widget(bar);
+  label_buffer_list->destroy(label_buffer_list);
+}
+
+struct widget *init_topbar(struct widget_dto *wid_dto) {
   struct widget *bar =
-      create_widget(name, x, y, height, width, fg_color, bg_color);
+      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, wid_dto->height,
+                    wid_dto->width, wid_dto->fg_color, wid_dto->bg_color);
   if (bar == NULL)
     return NULL;
 
-  struct widget *label_buffer_list =
-      init_label("label_buffer_list", 0, 0, 1, 1, fg_color, bg_color);
+  struct widget *label_buffer_list = init_label(&(struct widget_dto){
+      "label_buffer_list", 0, 0, 1, 1, wid_dto->fg_color, wid_dto->bg_color});
 
   if (label_buffer_list == NULL) {
     destroy_widget(bar);
@@ -25,6 +52,8 @@ struct widget *init_topbar(char *name, int x, int y, int height, int width,
   }
 
   add_children(bar, label_buffer_list);
+  bar->render = render_topbar;
+  bar->destroy = destroy_topbar;
 
   return bar;
 }
@@ -91,28 +120,4 @@ void add_buffer_to_topbar(struct buffer *buff) {
 void remove_buffer_from_topbar(struct buffer *buff) {
   remove_buffer(buff);
   refresh_buffer_list_label();
-}
-
-void render_topbar(struct widget *bar) {
-  if (bar == NULL)
-    return;
-
-  struct widget *label_buffer_list =
-      find_widget_by_name("_topbar_label_buffer_list");
-
-  render(bar);
-  render_label(label_buffer_list);
-}
-
-void destroy_topbar(struct widget *bar) {
-  if (bar == NULL)
-    return;
-
-  while (bar->childrens_counter > 0) {
-    struct widget *child = bar->childrens[0];
-    remove_children(bar, child);
-    destroy_widget(child);
-  }
-
-  destroy_widget(bar);
 }
