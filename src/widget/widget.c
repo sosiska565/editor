@@ -100,6 +100,10 @@ struct widget *find_widget_by_name(char *name) {
   return NULL;
 }
 
+static void render_widget_default(struct widget *wid) { render(wid); }
+
+static void destroy_widget_default(struct widget *wid) { destroy_widget(wid); }
+
 struct widget *create_widget(char *name, int x, int y, int height, int width,
                              int fg_color, int bg_color) {
   if (exists_widget_by_name(name) == 1) {
@@ -147,6 +151,9 @@ struct widget *create_widget(char *name, int x, int y, int height, int width,
   wid->right = x + width;
   wid->center_x = width / 2;
   wid->center_y = height / 2;
+
+  wid->render = render_widget_default;
+  wid->destroy = destroy_widget_default;
 
   add_widget(wid);
 

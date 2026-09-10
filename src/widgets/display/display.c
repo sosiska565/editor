@@ -1,4 +1,5 @@
 #include "display.h"
+#include "../../color/color.h"
 #include "../../terminal/terminal.h"
 #include "../bottombar/bottombar.h"
 #include "../editor/editor.h"
@@ -16,7 +17,6 @@ static void render_display(struct widget *disp) {
 
   render(disp);
 
-  bottombar_wid->render(bottombar_wid);
   bottombar_wid->render(bottombar_wid);
   topbar_wid->render(topbar_wid);
   editor_wid->render(editor_wid);
@@ -47,24 +47,20 @@ struct widget *init_display(struct widget_dto *wid_dto) {
   disp->render = render_display;
   disp->destroy = destroy_display;
 
-  struct widget *bottombar_wid = init_bottombar(&(struct widget_dto){
-      "bottombar", disp->left, disp->height - 1, 1, disp->width,
-      TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG});
+  struct widget *bottombar_wid = init_bottombar(
+      &(struct widget_dto){"bottombar", disp->left, disp->height - 1, 1,
+                           disp->width, rgb(0, 0, 0), rgb(255, 255, 255)});
   add_children(disp, bottombar_wid);
 
   struct widget *topbar_wid = init_topbar(
       &(struct widget_dto){"topbar", disp->left, disp->top, 1, disp->width,
-                           TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG});
+                           rgb(0, 0, 0), rgb(255, 255, 255)});
   add_children(disp, topbar_wid);
 
-  struct widget *editor_wid = init_editor(&(struct widget_dto){
-      "editor", 0, disp->y + 1, disp->height - 2, disp->width,
-      TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR});
+  struct widget *editor_wid = init_editor(
+      &(struct widget_dto){"editor", 0, disp->y + 1, disp->height - 2,
+                           disp->width, rgb(255, 255, 255), rgb(0, 0, 0)});
   add_children(disp, editor_wid);
-
-  struct widget *test_wid = init_testwidget(
-      &(struct widget_dto){"Penis", 10, 10, 20, 20, TERMINAL_COLOR_WHITE_FG,
-                           TERMINAL_COLOR_BLACK_BG});
 
   if (bottombar_wid == NULL || topbar_wid == NULL || editor_wid == NULL) {
     destroy_widget(disp);

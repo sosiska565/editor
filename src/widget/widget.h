@@ -1,7 +1,10 @@
 #ifndef WIDGET
 #define WIDGET
 
+enum widget_type { CONTENT, CONTENT_LESS };
+
 struct widget {
+  enum widget_type type;
   char *name;
   int id;
   int x;
@@ -25,6 +28,7 @@ struct widget {
   int fg_color;
   int bg_color;
 
+  void (*update)(int key, void (*cb)(void));
   void (*render)(struct widget *wid);
   void (*destroy)(struct widget *wid);
 };

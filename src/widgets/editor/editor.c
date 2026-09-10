@@ -1,5 +1,6 @@
 #include "editor.h"
 #include "../../buffer/buffer.h"
+#include "../../color/color.h"
 #include "../../debug/debug.h"
 #include "../../file/file.h"
 #include "../../handlers/keyHandler/keyHandler.h"
@@ -350,7 +351,7 @@ static void open_cmdline(struct widget *editor_wid) {
 
   struct widget *cmd_line = init_cmdline(
       &(struct widget_dto){"cmdline", (editor_wid->width / 2) - 25, 2, 0, 0,
-                           TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG},
+                           rgb(0, 0, 0), rgb(255, 255, 255)},
       execute_command);
 
   if (cmd_line == NULL) {

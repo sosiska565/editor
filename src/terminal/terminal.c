@@ -30,8 +30,8 @@ void enable_raw_mode() {
 void clean_cells_buffer() {
   for (int i = 0; i < term.width * term.height; i++) {
     term.cells[i].ch = ' ';
-    term.cells[i].bg_color = TERMINAL_DEFAULT_COLOR;
-    term.cells[i].fg_color = TERMINAL_DEFAULT_COLOR;
+    term.cells[i].bg_color = 0x000000;
+    term.cells[i].fg_color = 0xFFFFFF;
   }
 }
 
@@ -78,7 +78,17 @@ void move_cursor_terminal(int x, int y) {
 void hide_terminal_cursor() { printf("\033[?25l"); }
 void show_terminal_cursor() { printf("\033[?25h"); }
 
-void change_color_terminal(int fg, int bg) { printf("\033[%d;%dm", fg, bg); }
+void change_color_terminal(unsigned fg, unsigned bg) {
+  unsigned char fg_r = (fg >> 16) & 0xFF;
+  unsigned char fg_g = (fg >> 8) & 0xFF;
+  unsigned char fg_b = fg & 0xFF;
+
+  unsigned char bg_r = (bg >> 16) & 0xFF;
+  unsigned char bg_g = (bg >> 8) & 0xFF;
+  unsigned char bg_b = bg & 0xFF;
+  printf("\033[38;2;%d;%d;%dm\033[48;2;%d;%d;%dm", fg_r, fg_g, fg_b, bg_r, bg_g,
+         bg_b);
+}
 
 void flush_buffer_to_screen() {
   int changed = 0;

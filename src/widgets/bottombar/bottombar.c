@@ -1,4 +1,5 @@
 #include "bottombar.h"
+#include "../../color/color.h"
 #include "../../terminal/terminal.h"
 #include "../clock/clock.h"
 #include "../label/label.h"
@@ -43,11 +44,10 @@ struct widget *init_bottombar(struct widget_dto *wid_dto) {
   bar->render = render_bottombar;
   bar->destroy = destroy_bottombar;
 
-  struct widget *clock_wid = init_clock(
-      &(struct widget_dto){"clock", bar->width - 8, 0, 0, 0,
-                           TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG});
+  struct widget *clock_wid = init_clock(&(struct widget_dto){
+      "clock", bar->width - 8, 0, 0, 0, rgb(0, 0, 0), rgb(255, 255, 255)});
   struct widget *mode_wid = init_label(&(struct widget_dto){
-      "mode", 0, 0, 1, 20, TERMINAL_COLOR_BLACK_FG, TERMINAL_COLOR_WHITE_BG});
+      "mode", 0, 0, 1, 20, rgb(0, 0, 0), rgb(255, 255, 255)});
 
   if (clock_wid == NULL || mode_wid == NULL) {
     destroy_widget(bar);

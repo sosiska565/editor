@@ -7,6 +7,7 @@
 #include "widget/widget.h"
 #include "widgets/display/display.h"
 
+#include "color/color.h"
 #include "file/file.h"
 #include <fcntl.h>
 #include <getopt.h>
@@ -57,7 +58,7 @@ int main(int argc, char *argv[]) {
 
   struct widget *display_wid = init_display(
       &(struct widget_dto){"display", 0, 0, term.height, term.width,
-                           TERMINAL_COLOR_WHITE_FG, TERMINAL_DEFAULT_COLOR});
+                           rgb(255, 255, 255), rgb(0, 0, 0)});
 
   if (display_wid == NULL)
     errExitFprintf("display_wid is null");
