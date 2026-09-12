@@ -3,6 +3,6 @@
 
 #include "../../widget/widget.h"
 
-struct widget *init_bottombar(struct widget_dto *wid_dto);
+struct widget *w_bottombar(struct widget_dto *wid_dto);
 
 #endif

@@ -5,6 +5,7 @@
 #include "../../file/file.h"
 #include "../../handlers/keyHandler/keyHandler.h"
 #include "../../terminal/terminal.h"
+#include "../../theme/theme.h"
 #include "../cmdline/cmdline.h"
 #include "../topbar/topbar.h"
 #include <ctype.h>
@@ -27,6 +28,7 @@ void change_mode(int m, struct widget *editor_wid);
 
 static void render_editor(struct widget *wid);
 static void destroy_editor(struct widget *wid);
+static int update_editor(struct widget *wid, int key);
 
 static void delete_line(int at) {
   if (at < 0 || at >= E.line_count)
@@ -156,15 +158,16 @@ static void refresh_editor_widget(struct widget *wid) {
   }
 }
 
-struct widget *init_editor(struct widget_dto *wid_dto) {
-  struct widget *wid =
-      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, wid_dto->height,
-                    wid_dto->width, wid_dto->fg_color, wid_dto->bg_color);
+struct widget *w_editor(struct widget_dto *wid_dto) {
+  struct widget *wid = create_widget(wid_dto);
   if (wid == NULL)
     return NULL;
 
   wid->render = render_editor;
   wid->destroy = destroy_editor;
+  wid->update = update_editor;
+
+  focused_widget = wid;
 
   current_buffer = buffer_list[0];
   g_editor_wid = wid;
@@ -349,10 +352,11 @@ static void open_cmdline(struct widget *editor_wid) {
   if (find_widget_by_name("_display_editor_cmdline") != NULL)
     return;
 
-  struct widget *cmd_line = init_cmdline(
-      &(struct widget_dto){"cmdline", (editor_wid->width / 2) - 25, 2, 0, 0,
-                           rgb(0, 0, 0), rgb(255, 255, 255)},
-      execute_command);
+  struct widget *cmd_line =
+      w_cmdline(&(struct widget_dto){"cmdline", (editor_wid->width / 2) - 25, 2,
+                                     3, 50, app_theme.on_secondary_color,
+                                     app_theme.secondary_color},
+                execute_command);
 
   if (cmd_line == NULL) {
     write_debug_err("editor: failed to open cmdline");
@@ -465,56 +469,55 @@ static void delete_char_at_cursor() {
   }
 }
 
-void key_events_handler(struct widget *wid) {
+static int update_editor(struct widget *wid, int key) {
   if (editor_mode == COMMAND_MODE) {
     struct widget *cmd_line = find_widget_by_name("_display_editor_cmdline");
-    cmdline_status status = cmdline_process_key(cmd_line, term.key);
+    cmdline_status status = cmdline_process_key(cmd_line, key);
 
     if (status != CMDLINE_ACTIVE) {
       exit_command_mode(wid);
     }
-    return;
+    return 0;
   }
 
-  if (term.key == 'H' && editor_mode != INSERT_MODE) {
+  if (key == 'H' && editor_mode != INSERT_MODE) {
     switch_to_adjacent_buffer(-1, wid);
   }
-  if (term.key == 'L' && editor_mode != INSERT_MODE) {
+  if (key == 'L' && editor_mode != INSERT_MODE) {
     switch_to_adjacent_buffer(1, wid);
   }
 
-  if (term.key == KEY_ESCAPE) {
+  if (key == KEY_ESCAPE) {
     change_mode(NORMAL_MODE, wid);
-  } else if ((term.key == 'i' || term.key == 'a') &&
-             editor_mode != INSERT_MODE) {
+  } else if ((key == 'i' || key == 'a') && editor_mode != INSERT_MODE) {
     change_mode(INSERT_MODE, wid);
-    if (term.key == 'a') {
+    if (key == 'a') {
       int len = (E.file_y < E.line_count) ? strlen(E.lines[E.file_y]) : 0;
       if (E.file_x < len) {
         E.file_x++;
       }
     }
-  } else if ((term.key == ':') && editor_mode != INSERT_MODE) {
+  } else if ((key == ':') && editor_mode != INSERT_MODE) {
     change_mode(COMMAND_MODE, wid);
-  } else if (term.key == KEY_ARROW_LEFT ||
-             (term.key == 'h' && editor_mode != INSERT_MODE)) {
+  } else if (key == KEY_ARROW_LEFT ||
+             (key == 'h' && editor_mode != INSERT_MODE)) {
     E.file_x--;
-  } else if (term.key == KEY_ARROW_DOWN ||
-             (term.key == 'j' && editor_mode != INSERT_MODE)) {
+  } else if (key == KEY_ARROW_DOWN ||
+             (key == 'j' && editor_mode != INSERT_MODE)) {
     E.file_y++;
-  } else if (term.key == KEY_ARROW_RIGHT ||
-             (term.key == 'l' && editor_mode != INSERT_MODE)) {
+  } else if (key == KEY_ARROW_RIGHT ||
+             (key == 'l' && editor_mode != INSERT_MODE)) {
     E.file_x++;
-  } else if (term.key == KEY_ARROW_UP ||
-             (term.key == 'k' && editor_mode != INSERT_MODE)) {
+  } else if (key == KEY_ARROW_UP ||
+             (key == 'k' && editor_mode != INSERT_MODE)) {
     E.file_y--;
   } else if (editor_mode == INSERT_MODE) {
-    if (term.key == '\n' || term.key == '\r') {
+    if (key == '\n' || key == '\r') {
       insert_newline_at_cursor();
-    } else if (term.key == KEY_BACKSPACE) {
+    } else if (key == KEY_BACKSPACE) {
       delete_char_at_cursor();
-    } else if (isprint(term.key)) {
-      insert_char_at_cursor(term.key);
+    } else if (isprint(key)) {
+      insert_char_at_cursor(key);
     }
   }
 
@@ -548,17 +551,14 @@ void key_events_handler(struct widget *wid) {
   term.cursor_x = wid->x + render_x;
   term.cursor_y = wid->y + render_y;
   move_cursor_terminal(term.cursor_x, term.cursor_y);
+
+  return 0;
 }
 
 static void render_editor(struct widget *wid) {
   if (wid == NULL)
     return;
-  key_events_handler(wid);
   render(wid);
-
-  struct widget *cmd_line = find_widget_by_name("_display_editor_cmdline");
-  if (cmd_line != NULL)
-    cmd_line->render(cmd_line);
 }
 
 static void destroy_editor(struct widget *wid) {

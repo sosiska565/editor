@@ -13,37 +13,22 @@ static void render_topbar(struct widget *bar) {
   if (bar == NULL)
     return;
 
-  struct widget *label_buffer_list =
-      find_widget_by_name("_topbar_label_buffer_list");
-
   render(bar);
-  label_buffer_list->render(label_buffer_list);
 }
 
 static void destroy_topbar(struct widget *bar) {
   if (bar == NULL)
     return;
 
-  struct widget *label_buffer_list =
-      find_widget_by_name("_topbar_label_buffer_list");
-
-  while (bar->childrens_counter > 0) {
-    struct widget *child = bar->childrens[0];
-    remove_children(bar, child);
-  }
-
   destroy_widget(bar);
-  label_buffer_list->destroy(label_buffer_list);
 }
 
-struct widget *init_topbar(struct widget_dto *wid_dto) {
-  struct widget *bar =
-      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, wid_dto->height,
-                    wid_dto->width, wid_dto->fg_color, wid_dto->bg_color);
+struct widget *w_topbar(struct widget_dto *wid_dto) {
+  struct widget *bar = create_widget(wid_dto);
   if (bar == NULL)
     return NULL;
 
-  struct widget *label_buffer_list = init_label(&(struct widget_dto){
+  struct widget *label_buffer_list = w_label(&(struct widget_dto){
       "label_buffer_list", 0, 0, 1, 1, wid_dto->fg_color, wid_dto->bg_color});
 
   if (label_buffer_list == NULL) {

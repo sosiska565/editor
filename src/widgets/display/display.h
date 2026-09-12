@@ -3,6 +3,6 @@
 
 #include "../../widget/widget.h"
 
-struct widget *init_display(struct widget_dto *wid_dto);
+struct widget *w_display(struct widget_dto *wid_dto);
 
 #endif

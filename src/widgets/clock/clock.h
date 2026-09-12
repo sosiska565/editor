@@ -3,6 +3,6 @@
 
 #include "../../widget/widget.h"
 
-struct widget *init_clock(struct widget_dto *wid_dto);
+struct widget *w_clock(struct widget_dto *wid_dto);
 
 #endif

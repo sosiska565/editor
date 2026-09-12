@@ -12,23 +12,16 @@ struct widget {
   int height;
   int width;
 
-  int top;
-  int bottom;
-  int left;
-  int right;
-  int center_x;
-  int center_y;
-
   char *content;
 
   struct widget *parent;
   struct widget **childrens;
   int childrens_counter;
 
-  int fg_color;
-  int bg_color;
+  unsigned int fg_color;
+  unsigned int bg_color;
 
-  void (*update)(int key, void (*cb)(void));
+  int (*update)(struct widget *wid, int key);
   void (*render)(struct widget *wid);
   void (*destroy)(struct widget *wid);
 };
@@ -41,6 +34,16 @@ struct widget_dto {
   int width;
   int fg_color;
   int bg_color;
+};
+
+struct edges {
+  int top;
+  int bottom;
+  int left;
+  int right;
+  int vertical;
+  int horizontal;
+  int all;
 };
 
 typedef enum {
@@ -57,11 +60,12 @@ typedef enum {
   ALIGN_CENTER_RIGHT = ALIGN_RIGHT | ALIGN_Y_CTR
 } alignment;
 
-struct widget *create_widget(char *name, int x, int y, int height, int width,
-                             int fg_color, int bg_color);
+struct widget *create_widget(struct widget_dto *wid_dto);
+struct widget *create_contentless_widget();
 int destroy_widget(struct widget *wid);
 void render(struct widget *wid);
-void render_all_widgets();
+void render_widget_tree(struct widget *wid);
+void destroy_widget_tree(struct widget *wid);
 
 void add_children(struct widget *parent_wid, struct widget *wid);
 int remove_children(struct widget *parent_wid, struct widget *wid);
@@ -75,5 +79,7 @@ void putstring_in_widgetf_aligment(struct widget *wid, int flags, char *format,
 int change_size_widget(struct widget *wid, int height, int width);
 
 struct widget *find_widget_by_name(char *name);
+
+extern struct widget *focused_widget;
 
 #endif

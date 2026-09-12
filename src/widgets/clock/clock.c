@@ -28,10 +28,8 @@ static void destroy_clock(struct widget *wid) {
   destroy_widget(wid);
 }
 
-struct widget *init_clock(struct widget_dto *wid_dto) {
-  struct widget *clock_wid =
-      create_widget(wid_dto->name, wid_dto->x, wid_dto->y, 1, 8,
-                    wid_dto->fg_color, wid_dto->bg_color);
+struct widget *w_clock(struct widget_dto *wid_dto) {
+  struct widget *clock_wid = create_widget(wid_dto);
 
   if (clock_wid == NULL) {
     return NULL;

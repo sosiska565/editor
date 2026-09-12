@@ -16,14 +16,13 @@ static int saved_cursor_x = -1;
 static int saved_cursor_y = -1;
 
 static cmdline_submit_cb submit_cb = NULL;
-
-static void render_cmdline(struct widget *wid) {
+void render_cmdline(struct widget *wid) {
   if (wid == NULL)
     return;
   render(wid);
 }
 
-static void destroy_cmdline(struct widget *wid) {
+void destroy_cmdline(struct widget *wid) {
   if (wid == NULL)
     return;
 
@@ -58,10 +57,9 @@ static void redraw_cmdline(struct widget *wid) {
   move_cursor_terminal(term.cursor_x, term.cursor_y);
 }
 
-struct widget *init_cmdline(struct widget_dto *wid_dto,
-                            cmdline_submit_cb on_submit) {
-  struct widget *wid = create_widget(wid_dto->name, wid_dto->x, wid_dto->y, 3,
-                                     50, wid_dto->fg_color, wid_dto->bg_color);
+struct widget *w_cmdline(struct widget_dto *wid_dto,
+                         cmdline_submit_cb on_submit) {
+  struct widget *wid = create_widget(wid_dto);
   if (wid == NULL)
     return NULL;
 

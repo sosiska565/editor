@@ -8,9 +8,32 @@
 #include <unistd.h>
 
 struct widget **widgets = NULL;
+struct widget *focused_widget = NULL;
 
 int widgets_counter = 0;
 int global_id = 0;
+
+void render_widget_tree(struct widget *wid) {
+  if (wid == NULL)
+    return;
+  if (wid->render != NULL)
+    wid->render(wid);
+  for (int i = 0; i < wid->childrens_counter; i++) {
+    render_widget_tree(wid->childrens[i]);
+  }
+}
+
+void destroy_widget_tree(struct widget *wid) {
+  if (wid == NULL)
+    return;
+  if (wid->render != NULL)
+    wid->destroy(wid);
+  for (int i = 0; i < wid->childrens_counter; i++) {
+    destroy_widget_tree(wid->childrens[i]);
+  }
+
+  write_debug_info("Childrens Counter: %d", wid->childrens_counter);
+}
 
 void add_widget(struct widget *wid) {
   widgets_counter++;
@@ -104,9 +127,8 @@ static void render_widget_default(struct widget *wid) { render(wid); }
 
 static void destroy_widget_default(struct widget *wid) { destroy_widget(wid); }
 
-struct widget *create_widget(char *name, int x, int y, int height, int width,
-                             int fg_color, int bg_color) {
-  if (exists_widget_by_name(name) == 1) {
+static struct widget *create_widget_base(struct widget_dto *wid_dto) {
+  if (exists_widget_by_name(wid_dto->name) == 1) {
     return NULL;
   }
 
@@ -119,43 +141,61 @@ struct widget *create_widget(char *name, int x, int y, int height, int width,
     return NULL;
   }
 
-  char *con = (char *)malloc(height * width * sizeof(char));
-  if (con == NULL) {
-    return NULL;
-  }
-  memset(con, ' ', height * width);
-
   wid->id = global_id++;
-  wid->name = strdup(name);
+  wid->name = strdup(wid_dto->name);
   if (wid->name == NULL) {
-    free(con);
     free(wid);
     return NULL;
   }
 
-  wid->x = x;
-  wid->y = y;
-  wid->height = height;
-  wid->width = width;
-  wid->fg_color = fg_color;
-  wid->bg_color = bg_color;
+  wid->x = wid_dto->x;
+  wid->y = wid_dto->y;
+  wid->height = wid_dto->height;
+  wid->width = wid_dto->width;
+  wid->fg_color = wid_dto->fg_color;
+  wid->bg_color = wid_dto->bg_color;
 
   wid->childrens_counter = 0;
   wid->childrens = NULL;
   wid->parent = NULL;
-  wid->content = con;
-
-  wid->top = y;
-  wid->bottom = y + height;
-  wid->left = x;
-  wid->right = x + width;
-  wid->center_x = width / 2;
-  wid->center_y = height / 2;
+  wid->content = NULL;
 
   wid->render = render_widget_default;
   wid->destroy = destroy_widget_default;
+  wid->type = CONTENT_LESS;
 
   add_widget(wid);
+
+  return wid;
+}
+
+struct widget *create_contentless_widget() {
+  char wid_name[1024];
+  memset(wid_name, ' ', 1024);
+  snprintf(wid_name, 1024, "contentless-%d", global_id + 1);
+
+  return create_widget_base(&(struct widget_dto){
+      .name = wid_name,
+      .height = 0,
+      .width = 0,
+      .bg_color = 0,
+      .fg_color = 0,
+      .x = 0,
+      .y = 0,
+  });
+}
+
+struct widget *create_widget(struct widget_dto *wid_dto) {
+  struct widget *wid = create_widget_base(wid_dto);
+
+  char *con = (char *)malloc(wid_dto->height * wid_dto->width * sizeof(char));
+  if (con == NULL) {
+    return NULL;
+  }
+  memset(con, ' ', wid_dto->height * wid_dto->width);
+
+  wid->content = con;
+  wid->type = CONTENT;
 
   return wid;
 }
@@ -430,11 +470,6 @@ int change_size_widget(struct widget *wid, int new_height, int new_width) {
   wid->content = new_content;
   wid->height = new_height;
   wid->width = new_width;
-
-  wid->bottom = wid->y + new_height;
-  wid->right = wid->x + new_width;
-  wid->center_x = new_width / 2;
-  wid->center_y = new_height / 2;
 
   return 0;
 }

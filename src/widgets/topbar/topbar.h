@@ -4,7 +4,7 @@
 #include "../../buffer/buffer.h"
 #include "../../widget/widget.h"
 
-struct widget *init_topbar(struct widget_dto *wid_dto);
+struct widget *w_topbar(struct widget_dto *wid_dto);
 
 void change_file_name(struct widget *bar, char *filename);
 void add_buffer_to_topbar(struct buffer *buff);

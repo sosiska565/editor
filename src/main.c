@@ -15,6 +15,9 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include "color/color.h"
+#include "theme/theme.h"
+
 enum { GEN_CONFIG = 1000 };
 
 int main(int argc, char *argv[]) {
@@ -24,6 +27,15 @@ int main(int argc, char *argv[]) {
                                   {"gen-config", no_argument, NULL, GEN_CONFIG},
                                   {"version", no_argument, NULL, 'v'},
                                   {NULL, 0, NULL, 0}};
+
+  app_theme = (struct theme){.primary_color = rgb(99, 102, 241),
+                             .secondary_color = rgb(16, 185, 129),
+                             .background_color = rgb(30, 41, 59),
+                             .error_color = rgb(239, 68, 68),
+                             .warning_color = rgb(245, 158, 11),
+                             .on_primary_color = rgb(255, 255, 255),
+                             .on_secondary_color = rgb(15, 23, 42),
+                             .on_background_color = rgb(241, 245, 249)};
 
   init_debug();
   write_debug_info("Debug init");
@@ -56,9 +68,9 @@ int main(int argc, char *argv[]) {
 
   open_file(argv[argc - 1]);
 
-  struct widget *display_wid = init_display(
-      &(struct widget_dto){"display", 0, 0, term.height, term.width,
-                           rgb(255, 255, 255), rgb(0, 0, 0)});
+  struct widget *display_wid =
+      w_display(&(struct widget_dto){"display", 0, 0, term.height, term.width,
+                                     rgb(255, 255, 255), rgb(0, 0, 0)});
 
   if (display_wid == NULL)
     errExitFprintf("display_wid is null");
@@ -69,21 +81,21 @@ int main(int argc, char *argv[]) {
   // start main loop
   write_debug_info("Start main loop");
 
-  term.cursor_x = 0;
-  term.cursor_y = 1;
-  move_cursor_terminal(term.cursor_x, term.cursor_y);
-
   while (1) {
     term.key = read_key_and_parse();
 
+    if (term.key != -1 && focused_widget != NULL &&
+        focused_widget->update != NULL) {
+      focused_widget->update(focused_widget, term.key);
+    }
     clean_cells_buffer();
-    display_wid->render(display_wid);
+    render_widget_tree(display_wid);
     flush_buffer_to_screen();
 
     usleep(10000);
   }
 
-  display_wid->destroy(display_wid);
+  destroy_widget_tree(display_wid);
 
   return EXIT_SUCCESS;
 }

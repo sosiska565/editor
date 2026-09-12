@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 4.4.2)
 project(Editor C)
 
 set(CMAKE_C_STANDART 23)
-set(CMAKE_C_STANDART_REQURED ON)
+set(CMAKE_C_STANDART_REQUIRED ON)
 
 add_compile_definitions(_FILE_OFFSET_BITS=64)
 
@@ -26,7 +26,7 @@ add_executable(
   src/widgets/label/label.c
   src/buffer/buffer.c
   src/widgets/cmdline/cmdline.c
-  src/widgets/testwidget/testwidget.c
   src/color/color.c
   src/theme/theme.c
+  src/widgets/margin/margin.c
 )
